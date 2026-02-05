@@ -1,0 +1,406 @@
+:root {
+    /* Dark Mode Palette */
+    --bg-page: #121212;
+    --bg-panel: #1e1e1e;
+    --bg-piano-dark: #0a0a0a;
+    --bg-piano-wood: #181818;
+
+    --text-main: #e0e0e0;
+    --text-muted: #888888;
+
+    --accent: #5c50ff;
+    --accent-secondary: #ffca28;
+    /* Used for the active playback line on the sheet */
+    --accent-active-line: rgba(92, 80, 255, 0.2);
+
+    --key-white: #f0f0f0;
+    --key-white-active: #d1d1d1;
+    --key-black: #111111;
+    --key-black-active: #000000;
+
+    --border: #333;
+}
+
+body {
+    background: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* --- Sticky Positioning Logic --- */
+.piano-sticky-wrapper {
+    position: sticky;
+    top: -180px;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.piano-assembly {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-piano-dark);
+}
+
+/* --- Dashboard --- */
+.dashboard {
+    background: var(--bg-panel);
+    height: 60px;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.left-controls,
+.right-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand {
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--accent);
+}
+
+.separator {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+}
+
+/* --- Controls --- */
+select {
+    background: #2a2a2a;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.song-picker {
+    min-width: 200px;
+    font-weight: 600;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.toggle-container input {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* Playback Controls */
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wide-btn {
+    width: auto;
+    padding: 0 15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.control-btn {
+    background: var(--bg-page);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    min-width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover:not(:disabled) {
+    background: #333;
+    border-color: #555;
+}
+
+.control-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+.tempo-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2a2a2a;
+    padding: 0 10px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+input[type=range] {
+    width: 80px;
+    height: 4px;
+    accent-color: #888; /* Neutral grey slider */
+    cursor: pointer;
+}
+
+#tempoValue {
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--text-muted);
+    cursor: pointer;
+    min-width: 35px;
+    text-align: right;
+}
+
+#tempoValue:hover {
+    color: var(--text-main);
+    text-decoration: underline;
+}
+
+/* --- Piano Body & Cheeks --- */
+.piano-body {
+    display: flex;
+    width: 100%;
+    height: 260px;
+    background: var(--bg-piano-dark);
+    position: relative;
+}
+
+.piano-shadow {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-piano-dark);
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.2) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2) 75%, transparent 75%, transparent);
+    background-size: 4px 4px;
+}
+
+.cheek-block {
+    flex-grow: 1;
+    background: var(--bg-piano-wood);
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.2) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2) 75%, transparent 75%, transparent);
+    background-size: 4px 4px;
+    border-bottom: 1px solid #000;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.piano-frame {
+    width: 100%;
+    max-width: 1400px;
+    min-width: 1000px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.fallboard {
+    height: 20px;
+    background-color: #000;
+}
+
+.keys-wrapper {
+    position: relative;
+    flex-grow: 1;
+    background: #000;
+    overflow: hidden;
+    border-top: 4px solid #800;
+}
+
+/* --- Keys --- */
+.key {
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 12px;
+    box-sizing: border-box;
+    transition: background 0.05s, transform 0.05s;
+    user-select: none;
+}
+
+.white-key {
+    background: var(--key-white);
+    width: calc(100% / 36 + 1px);
+    height: calc(100% - 2px);
+    border: 1px solid #999;
+    border-top: none;
+    border-bottom: 4px solid #333;
+    border-radius: 0 0 6px 6px;
+    z-index: 1;
+    box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.black-key {
+    background: var(--key-black);
+    height: 60%;
+    border-radius: 0 0 4px 4px;
+    z-index: 2;
+    border: 1px solid #000;
+    border-bottom: 3px solid #333;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.white-key.active {
+    background: var(--key-white-active);
+    transform: translateY(2px);
+    box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+}
+
+.black-key.active {
+    background: var(--key-black-active);
+    height: 60.5%;
+}
+
+/* --- Note Labels --- */
+.hide-notes .note-name { display: none; }
+.hide-hints .key-hint { display: none; }
+
+.note-name {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #555;
+}
+
+.key-hint {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    opacity: 0.9;
+}
+
+.black-key .note-name { color: #888; }
+.black-key .key-hint { color: var(--accent-secondary); }
+
+/* --- Sheet Music Display --- */
+.app-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.sheet-display {
+    background: var(--bg-panel);
+    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid var(--border);
+    min-height: 500px;
+}
+
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+}
+
+.sheet-header h2 {
+    margin: 0 0 5px 0;
+    color: var(--accent);
+}
+
+.sheet-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+/* Pagination Controls */
+.sheet-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #252525;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+#pageIndicator {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: monospace;
+    color: var(--text-muted);
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Dual Page Layout */
+.sheet-content {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+}
+
+.sheet-divider {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+}
+
+.sheet-page-container {
+    flex: 1;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-main);
+    min-width: 0;
+    white-space: pre-wrap;
+}
+
+/* Sheet Line Styling & Interaction */
+.sheet-line {
+    display: block;
+    padding: 0 4px;
+    border-radius: 2px;
+    min-height: 1.6em;
+    cursor: pointer; /* Indicates clickable */
+    transition: background-color 0.1s;
+}
+
+.sheet-line:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover effect */
+}
+
+.sheet-line.active-line {
+    background-color: var(--accent-active-line);
+    color: #fff;
+    box-shadow: -4px 0 0 var(--accent); /* Left border indicator */
+}
+
+.footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-bottom: 20px;
+}
