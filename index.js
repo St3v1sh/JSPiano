@@ -47,7 +47,6 @@ class PianoAudio {
     }
   }
 
-  // Updated to support specific scheduling time
   play(midi, time = 0) {
     this.init();
     if (this.ctx.state === "suspended") this.ctx.resume();

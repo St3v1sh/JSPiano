@@ -403,7 +403,6 @@ input[type="range"] {
   line-height: 1.6;
   color: var(--text-main);
   min-width: 0;
-  white-space: pre-wrap;
 }
 
 /* Sheet Line Styling & Interaction */
