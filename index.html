@@ -1,91 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JS Piano</title>
-    <link rel="stylesheet" href="index.css">
-</head>
+    <link rel="stylesheet" href="index.css" />
+  </head>
 
-<body>
-
+  <body>
     <!-- Sticky Wrapper for Piano -->
     <div class="piano-sticky-wrapper">
-        <div class="piano-assembly">
-            <!-- Dashboard / Controls -->
-            <div class="dashboard">
-                <div class="left-controls">
-                    <span class="brand">JS Piano</span>
-                    <div class="separator"></div>
-                    <select id="songSelect" class="song-picker">
-                        <option value="" disabled selected>Select Song...</option>
-                    </select>
+      <div class="piano-assembly">
+        <!-- Dashboard / Controls -->
+        <div class="dashboard">
+          <div class="left-controls">
+            <span class="brand">JS Piano</span>
+            <div class="separator"></div>
+            <select id="songSelect" class="song-picker">
+              <option value="" disabled selected>Select Song...</option>
+            </select>
 
-                    <div class="separator"></div>
+            <div class="separator"></div>
 
-                    <!-- Playback Controls -->
-                    <div class="playback-controls">
-                        <button id="btnPlay" class="control-btn wide-btn">▶ Play</button>
-                        <button id="btnStop" class="control-btn wide-btn" disabled>■ Stop</button>
-                        <div class="tempo-control">
-                            <input type="range" id="tempoSlider" min="10" max="200" value="100">
-                            <span id="tempoValue" title="Click to reset speed">100%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="right-controls">
-                    <label class="toggle-container"><input type="checkbox" id="toggleNotes" checked> NOTES</label>
-                    <label class="toggle-container"><input type="checkbox" id="toggleHints" checked> HINTS</label>
-                    <div class="separator"></div>
-                    <select id="scaleSelect"></select>
-                </div>
+            <!-- Playback Controls -->
+            <div class="playback-controls">
+              <button id="btnPlay" class="control-btn wide-btn">▶ Play</button>
+              <button id="btnStop" class="control-btn wide-btn" disabled>
+                ■ Stop
+              </button>
+              <div class="tempo-control">
+                <input
+                  type="range"
+                  id="tempoSlider"
+                  min="10"
+                  max="200"
+                  value="100"
+                />
+                <span id="tempoValue" title="Click to reset speed">100%</span>
+              </div>
             </div>
+          </div>
 
-            <!-- Piano Body (Cheeks + Keys) -->
-            <div class="piano-wrapper">
-                <div class="piano-body">
-                    <div class="cheek-block left"></div>
-                    <div class="piano-frame">
-                        <div class="fallboard"></div> <!-- Decorative strip above keys -->
-                        <div class="keys-wrapper" id="piano"></div>
-                    </div>
-                    <div class="cheek-block right"></div>
-                </div>
-                <div class="piano-shadow"></div>
-            </div>
+          <div class="right-controls">
+            <label class="toggle-container"
+              ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
+            >
+            <label class="toggle-container"
+              ><input type="checkbox" id="toggleHints" checked /> HINTS</label
+            >
+            <div class="separator"></div>
+            <select id="scaleSelect"></select>
+          </div>
         </div>
+
+        <!-- Piano Body (Cheeks + Keys) -->
+        <div class="piano-wrapper">
+          <div class="piano-body">
+            <div class="cheek-block left"></div>
+            <div class="piano-frame">
+              <div class="fallboard"></div>
+              <!-- Decorative strip above keys -->
+              <div class="keys-wrapper" id="piano"></div>
+            </div>
+            <div class="cheek-block right"></div>
+          </div>
+          <div class="piano-shadow"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Content / Sheet Music -->
     <div class="app-container">
-        <div class="sheet-display" id="sheetDisplay">
-            <div class="sheet-header">
-                <div class="sheet-info">
-                    <h2 id="sheetTitle">Select a song to begin</h2>
-                    <div class="sheet-meta" id="sheetMeta"></div>
-                </div>
+      <div class="sheet-display" id="sheetDisplay">
+        <div class="sheet-header">
+          <div class="sheet-info">
+            <h2 id="sheetTitle">Select a song to begin</h2>
+            <div class="sheet-meta" id="sheetMeta"></div>
+          </div>
 
-                <!-- Pagination Controls -->
-                <div class="sheet-controls">
-                    <button id="btnPrev" class="control-btn" title="Previous Pages (-)">-</button>
-                    <span id="pageIndicator">Pg 1-2</span>
-                    <button id="btnNext" class="control-btn" title="Next Pages (=)">=</button>
-                </div>
-            </div>
-
-            <div class="sheet-content">
-                <div id="sheetLeft" class="sheet-page-container">No sheet selected.</div>
-                <div class="sheet-divider"></div>
-                <div id="sheetRight" class="sheet-page-container"></div>
-            </div>
+          <!-- Pagination Controls -->
+          <div class="sheet-controls">
+            <button id="btnPrev" class="control-btn" title="Previous Pages (-)">
+              -
+            </button>
+            <span id="pageIndicator">Pg 1-2</span>
+            <button id="btnNext" class="control-btn" title="Next Pages (=)">
+              =
+            </button>
+          </div>
         </div>
+
+        <div class="sheet-content">
+          <div id="sheetLeft" class="sheet-page-container">
+            No sheet selected.
+          </div>
+          <div class="sheet-divider"></div>
+          <div id="sheetRight" class="sheet-page-container"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Scripts -->
     <script src="musicSheets.js"></script>
     <script src="index.js"></script>
-</body>
-
+  </body>
 </html>
