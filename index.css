@@ -293,7 +293,8 @@ input[type="range"] {
 
 .black-key.active {
   background: var(--key-black-active);
-  height: 60.5%;
+  height: calc(60% + 2px);
+  border-bottom: 1px solid #333;
 }
 
 /* --- Note Labels --- */
