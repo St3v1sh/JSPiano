@@ -1,13 +1,11 @@
-var SheetProperties = {
+export const SheetProperties = {
   NAME: 0,
   SHEET: 1,
   BPM: 2,
   MAJOR: 3,
-  CUSTOM_SHEET: 6,
-  CUSTOM_SHEET_NAME: 4,
 };
 
-var presetSheets = [
+export const presetSheets = [
   [
     "Marble Machine",
     [
