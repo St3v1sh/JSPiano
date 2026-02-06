@@ -350,9 +350,7 @@ class AutoPlayer {
           continue;
         }
       }
-      if (text[i] !== ".") {
-        notes.push(text[i]);
-      }
+      notes.push(text[i]);
       i++;
     }
 

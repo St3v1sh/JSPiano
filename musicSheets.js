@@ -300,20 +300,22 @@ var presetSheets = [
   ],
 
   [
-    "The Good Doctor Riff",
-    [
-      "-E major, 140 beats of 4 notes per minute (560 BPM)",
-      "",
-      "--- The Good Doctor Riff - The Good Doctor ---",
-      "",
-      "-1 ---",
-      "{[5w]yo}... .... [5wak].[sl]. [sl]...",
-      "4. 4. .. 4. zlk. x.z.",
-      "[7ya]... .... [7qrak].[sl]. [sl].a.",
-      "[4g].4. h.4. d... s.a.",
-      "[5o]... .... .... ....",
-    ],
-    [560],
-    "E",
+    "Test",
+    `
+    . . . .
+    t t t t
+    [ts] [ts] [ts] [ts]
+    [t.] [t.] [.s] [.s]
+    {ts} {ts} {ts} {ts}
+    {ts...} {ts...} {ts...} {ts...}
+    t t t t
+    {t..} {.t.} {..t} {...}
+    {t.s} {.t.} {s.t} {.s.}
+    `
+      .trim()
+      .split("\n")
+      .map((line) => line.trim()),
+    [200],
+    "C",
   ],
 ];
