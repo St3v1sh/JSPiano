@@ -1,4 +1,4 @@
-import { presetSheets } from "./data/musicSheets.js";
+import { musicLibrary } from "./data/musicLibrary.js";
 import { AudioEngine } from "./core/AudioEngine.js";
 import { MusicLogic } from "./core/MusicLogic.js";
 import { AutoPlayer } from "./core/AutoPlayer.js";
@@ -58,28 +58,25 @@ const tempoSlider = document.getElementById("tempoSlider");
 const tempoValue = document.getElementById("tempoValue");
 
 // 1. Populate Song Select
-presetSheets.forEach((song, index) => {
-  const name = song[4] || song[0];
+musicLibrary.forEach((song, index) => {
   const opt = document.createElement("option");
   opt.value = index;
-  opt.innerText = name;
+  opt.innerText = song.title;
   songSel.appendChild(opt);
 });
 
 songSel.onchange = (e) => {
   const idx = e.target.value;
-  const song = presetSheets[idx];
+  const song = musicLibrary[idx];
+
   player.load(song);
   sheetUI.load(song);
 
   // Auto-set Scale
-  const scaleShort = song[3];
-  let normalizedScale = scaleShort.replace("b", "♭");
-  let targetScale = normalizedScale + " Major";
-
+  const targetScale = song.scale;
   if (logic.scales[targetScale]) {
     scaleSel.value = targetScale;
-    logic.currentScale = targetScale;
+    logic.setScale(targetScale);
     pianoUI.updateLabels();
   }
 };

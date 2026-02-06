@@ -31,12 +31,17 @@ export class SheetDisplay {
     this.render();
   }
 
-  load(songData) {
-    if (!songData) return;
-    const [name, sheetLines, bpm, scaleShort, customName] = songData;
+  load(songObject) {
+    if (!songObject) return;
 
-    this.dom.title.innerText = customName || name;
-    this.dom.meta.innerText = `BPM: ${bpm} | Scale: ${scaleShort}`;
+    const { title, artist, bpm, scale, sheet } = songObject;
+
+    this.dom.title.innerText = title;
+    // Add artist if it exists
+    const artistText = artist ? ` - ${artist}` : "";
+    this.dom.title.innerText += artistText;
+
+    this.dom.meta.innerText = `BPM: ${bpm} | Scale: ${scale}`;
 
     this.sheetPagesHTML = [];
     this.lineToPageMap = [];
@@ -44,7 +49,7 @@ export class SheetDisplay {
     let currentPageHTML = "";
     let currentPageIndex = 0;
 
-    sheetLines.forEach((line, globalIdx) => {
+    sheet.forEach((line, globalIdx) => {
       if (line.trim() === "~") {
         this.sheetPagesHTML.push(currentPageHTML);
         currentPageHTML = "";

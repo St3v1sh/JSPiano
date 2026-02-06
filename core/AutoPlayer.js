@@ -36,12 +36,12 @@ export class AutoPlayer {
     this.animationFrameId = null;
   }
 
-  load(songData) {
+  load(songObject) {
     this.stop();
-    this.songData = songData;
-    const bpmRaw = songData[2] ? songData[2][0] : 200;
-    this.baseBPM = parseInt(bpmRaw) || 200;
-    this.rawLines = songData[1];
+    this.songData = songObject;
+    this.baseBPM = songObject.bpm || 200;
+    this.rawLines = songObject.sheet || [];
+
     this.reset();
   }
 
