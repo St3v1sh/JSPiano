@@ -330,8 +330,9 @@ input[type="range"] {
 .app-container {
   max-width: 1000px;
   margin: 40px auto;
-  margin-bottom: 200px;
   padding: 0 20px;
+  padding-bottom: 1600px;
+  position: relative;
 }
 
 .sheet-display {
@@ -430,4 +431,91 @@ input[type="range"] {
   font-size: 12px;
   color: var(--text-muted);
   padding-bottom: 20px;
+}
+
+/* --- Floating Side Panel Styles --- */
+.side-panel-track {
+  position: absolute;
+  top: 0;
+  right: -180px;
+  bottom: 0;
+  width: 150px;
+}
+
+.side-panel {
+  position: sticky;
+  top: 160px;
+
+  width: 150px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+
+  opacity: 0;
+  transform: translateX(30px);
+  pointer-events: none;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.side-panel.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.side-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.side-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.side-row {
+  display: flex;
+  gap: 8px;
+}
+
+.side-row .control-btn {
+  flex: 1;
+}
+
+.side-select {
+  width: 100%;
+  background: #2a2a2a;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  padding: 5px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+.toggle-container.mini {
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+#sideTempoSlider {
+  width: 100%;
+}
+
+/* Hide side panel on smaller screens even if scrolled */
+@media (max-width: 1510px) {
+  .side-panel.visible {
+    display: none;
+  }
 }

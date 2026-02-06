@@ -32,98 +32,183 @@ const sheetUI = new SheetDisplay((lineIndex) => {
 // --- Initialize Player ---
 const player = new AutoPlayer(audio, logic, {
   onVisualEvent: (event) => {
-    if (event.lineIdx !== undefined) {
-      sheetUI.highlightLine(event.lineIdx);
-    }
-    if (event.midi) {
-      pianoUI.flashKey(event.midi);
-    }
+    if (event.lineIdx !== undefined) sheetUI.highlightLine(event.lineIdx);
+    if (event.midi) pianoUI.flashKey(event.midi);
   },
   onStop: () => {
     sheetUI.clearHighlight();
-    updatePlayButton(false);
+    updatePlayButtons(false);
   },
 });
 
 // --- Bootstrapping ---
 pianoUI.build();
 
-// --- DOM Bindings for Global Controls ---
+// --- DOM Bindings ---
+const songSelects = [
+  document.getElementById("songSelect"),
+  document.getElementById("sideSongSelect"),
+];
+const scaleSelects = [
+  document.getElementById("scaleSelect"),
+  document.getElementById("sideScaleSelect"),
+];
+const playBtns = [
+  document.getElementById("btnPlay"),
+  document.getElementById("sideBtnPlay"),
+];
+const stopBtns = [
+  document.getElementById("btnStop"),
+  document.getElementById("sideBtnStop"),
+];
+const tempoSliders = [
+  document.getElementById("tempoSlider"),
+  document.getElementById("sideTempoSlider"),
+];
+const tempoLabels = [
+  document.getElementById("tempoValue"),
+  document.getElementById("sideTempoValue"),
+];
+const noteToggles = [
+  document.getElementById("toggleNotes"),
+  document.getElementById("sideToggleNotes"),
+];
+const hintToggles = [
+  document.getElementById("toggleHints"),
+  document.getElementById("sideToggleHints"),
+];
+const sidePanel = document.getElementById("sidePanel");
 
-const songSel = document.getElementById("songSelect");
-const scaleSel = document.getElementById("scaleSelect");
-const btnPlay = document.getElementById("btnPlay");
-const btnStop = document.getElementById("btnStop");
-const tempoSlider = document.getElementById("tempoSlider");
-const tempoValue = document.getElementById("tempoValue");
-
-// 1. Populate Song Select
+// 1. Initial Song/Scale Population
 musicLibrary.forEach((song, index) => {
-  const opt = document.createElement("option");
-  opt.value = index;
-  opt.innerText = song.title;
-  songSel.appendChild(opt);
+  songSelects.forEach((sel) => {
+    const opt = document.createElement("option");
+    opt.value = index;
+    opt.innerText = song.title;
+    sel.appendChild(opt);
+  });
 });
 
-songSel.onchange = (e) => {
-  const idx = e.target.value;
-  const song = musicLibrary[idx];
+Object.keys(logic.scales).forEach((s) => {
+  scaleSelects.forEach((sel) => {
+    const o = document.createElement("option");
+    o.value = s;
+    o.innerText = s;
+    sel.appendChild(o);
+  });
+});
 
-  player.load(song);
-  sheetUI.load(song);
+// Force sync initial state
+songSelects[1].value = songSelects[0].value;
+scaleSelects[1].value = scaleSelects[0].value;
 
-  // Auto-set Scale
-  const targetScale = song.scale;
-  if (logic.scales[targetScale]) {
-    scaleSel.value = targetScale;
-    logic.setScale(targetScale);
+// 2. Synchronized Song Selection
+songSelects.forEach((sel) => {
+  sel.onchange = (e) => {
+    const idx = e.target.value;
+    const song = musicLibrary[idx];
+    songSelects.forEach((s) => (s.value = idx));
+
+    player.load(song);
+    sheetUI.load(song);
+
+    if (logic.scales[song.scale]) {
+      scaleSelects.forEach((ss) => (ss.value = song.scale));
+      logic.setScale(song.scale);
+      pianoUI.updateLabels();
+    }
+  };
+});
+
+// 3. Synchronized Scale Selection
+scaleSelects.forEach((sel) => {
+  sel.onchange = (e) => {
+    const val = e.target.value;
+    scaleSelects.forEach((s) => (s.value = val));
+    logic.setScale(val);
     pianoUI.updateLabels();
+  };
+});
+
+// 4. Playback Controls Sync
+function updatePlayButtons(isPlaying) {
+  playBtns.forEach((btn) => {
+    btn.innerText = isPlaying
+      ? btn.id.includes("side")
+        ? "II"
+        : "⏸ Pause"
+      : btn.id.includes("side")
+        ? "▶"
+        : "▶ Play";
+  });
+  stopBtns.forEach((btn) => {
+    btn.disabled = !isPlaying && player.currentLineIdx === 0;
+  });
+}
+
+playBtns.forEach((btn) => {
+  btn.onclick = () => {
+    const isPlaying = player.togglePlay();
+    updatePlayButtons(isPlaying);
+  };
+});
+
+stopBtns.forEach((btn) => {
+  btn.onclick = () => {
+    player.stop();
+    updatePlayButtons(false);
+  };
+});
+
+tempoSliders.forEach((slider) => {
+  slider.oninput = (e) => {
+    const val = e.target.value;
+    tempoSliders.forEach((s) => (s.value = val));
+    tempoLabels.forEach((l) => (l.innerText = val + "%"));
+    player.setTempo(val);
+  };
+});
+
+tempoLabels.forEach((label) => {
+  label.onclick = () => {
+    tempoSliders.forEach((s) => (s.value = 100));
+    tempoLabels.forEach((l) => (l.innerText = "100%"));
+    player.setTempo(100);
+  };
+});
+
+// 5. Toggle Sync Logic
+const handleToggles = (e) => {
+  const newState = e.target.checked;
+  const isNoteToggle = e.target.id.toLowerCase().includes("note");
+
+  if (isNoteToggle) {
+    noteToggles.forEach((t) => (t.checked = newState));
+  } else {
+    hintToggles.forEach((t) => (t.checked = newState));
+  }
+
+  pianoUI.toggleLabels(noteToggles[0].checked, hintToggles[0].checked);
+};
+
+[...noteToggles, ...hintToggles].forEach((t) => (t.onchange = handleToggles));
+
+// 6. Scroll Visibility Logic
+const updateSidePanelVisibility = () => {
+  const isDashboardHidden = window.scrollY > 60;
+  const isWideEnough = window.innerWidth > 1420;
+
+  if (isDashboardHidden && isWideEnough) {
+    sidePanel.classList.add("visible");
+  } else {
+    sidePanel.classList.remove("visible");
   }
 };
 
-// 2. Populate Scale Select
-Object.keys(logic.scales).forEach((s) => {
-  const o = document.createElement("option");
-  o.value = s;
-  o.innerText = s;
-  scaleSel.appendChild(o);
-});
+window.addEventListener("scroll", updateSidePanelVisibility);
+window.addEventListener("resize", updateSidePanelVisibility);
 
-scaleSel.onchange = (e) => {
-  logic.setScale(e.target.value);
-  pianoUI.updateLabels();
-};
-
-// 3. Playback Controls
-function updatePlayButton(isPlaying) {
-  btnPlay.innerText = isPlaying ? "II Pause" : "▶ Play";
-  // Only enable stop if we are playing or somewhere inside the song
-  btnStop.disabled = !isPlaying && player.currentLineIdx === 0;
-}
-
-btnPlay.onclick = () => {
-  const isPlaying = player.togglePlay();
-  updatePlayButton(isPlaying);
-};
-
-btnStop.onclick = () => {
-  player.stop();
-  updatePlayButton(false);
-};
-
-tempoSlider.oninput = (e) => {
-  const val = e.target.value;
-  tempoValue.innerText = val + "%";
-  player.setTempo(val);
-};
-
-tempoValue.onclick = () => {
-  tempoSlider.value = 100;
-  tempoValue.innerText = "100%";
-  player.setTempo(100);
-};
-
-// 4. Keyboard Interactions
+// 7. Keyboard Interactions
 window.addEventListener("keydown", (e) => {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
 
@@ -145,16 +230,7 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// 5. Toggles
-const toggleNotes = document.getElementById("toggleNotes");
-const toggleHints = document.getElementById("toggleHints");
-
-const handleToggle = () =>
-  pianoUI.toggleLabels(toggleNotes.checked, toggleHints.checked);
-toggleNotes.onchange = handleToggle;
-toggleHints.onchange = handleToggle;
-
-// 6. Focus Management (Prevent Spacebar from scrolling/triggering buttons)
+// 8. Focus Management
 const interactive = document.querySelectorAll(
   "button, select, input, [type='checkbox'], [type='range']",
 );

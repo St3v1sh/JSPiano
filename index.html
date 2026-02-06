@@ -71,6 +71,45 @@
 
     <!-- Main Content / Sheet Music -->
     <div class="app-container">
+      <div class="side-panel-track">
+        <!-- Floating Side Panel -->
+        <div id="sidePanel" class="side-panel">
+          <div class="side-group">
+            <div class="side-label">Song</div>
+            <select id="sideSongSelect" class="side-select"></select>
+          </div>
+          <div class="side-group">
+            <div class="side-label">Playback</div>
+            <div class="side-row">
+              <button id="sideBtnPlay" class="control-btn">▶</button>
+              <button id="sideBtnStop" class="control-btn" disabled>■</button>
+            </div>
+          </div>
+          <div class="side-group">
+            <div class="side-label">
+              Tempo <span id="sideTempoValue">100%</span>
+            </div>
+            <input
+              type="range"
+              id="sideTempoSlider"
+              min="10"
+              max="200"
+              value="100"
+            />
+          </div>
+          <div class="side-group">
+            <div class="side-label">Settings</div>
+            <select id="sideScaleSelect" class="side-select"></select>
+            <label class="toggle-container mini">
+              <input type="checkbox" id="sideToggleNotes" checked /> Notes
+            </label>
+            <label class="toggle-container mini">
+              <input type="checkbox" id="sideToggleHints" checked /> Hints
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div class="sheet-display" id="sheetDisplay">
         <div class="sheet-header">
           <div class="sheet-info">
