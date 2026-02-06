@@ -3,7 +3,7 @@ export class PianoKeyboard {
     this.container = document.getElementById(containerId);
     this.logic = logicEngine;
     this.triggerNoteCallback = audioRequestCallback;
-    this.audioProvider = audioProvider; // Store the reference to prefetch audio
+    this.audioProvider = audioProvider;
     this.midiToEl = new Map();
   }
 
@@ -12,6 +12,16 @@ export class PianoKeyboard {
     const whiteKeyCount = 36;
     const whiteKeyWidth = 100 / whiteKeyCount;
     const blackKeyWidth = whiteKeyWidth * 0.65;
+
+    // Real-world offsets for black keys relative to the divider line
+    // (Fraction of a white key width)
+    const blackKeyOffsets = {
+      0: -0.1, // C# shifted left
+      1: 0.1, // D# shifted right
+      3: -0.14, // F# shifted left
+      4: 0, // G# centered
+      5: 0.14, // A# shifted right
+    };
 
     this.container.innerHTML = "";
     this.midiToEl.clear();
@@ -23,24 +33,27 @@ export class PianoKeyboard {
       // White Key
       const wk = document.createElement("div");
       wk.className = "key white-key";
-      wk.style.left = `${i * whiteKeyWidth}%`;
+      // Use precise percentage to prevent drift
+      wk.style.left = i * whiteKeyWidth + "%";
       this.container.appendChild(wk);
       this.midiToEl.set(midi, wk);
 
-      // --- RESTORED PRELOAD ---
       if (this.audioProvider) this.audioProvider.preload(midi);
 
       // Black Key
       if (pattern[i % 7] && i < 35) {
         const bk = document.createElement("div");
         bk.className = "key black-key";
-        const leftPos = (i + 1) * whiteKeyWidth - blackKeyWidth / 2;
-        bk.style.left = `${leftPos}%`;
-        bk.style.width = `${blackKeyWidth}%`;
+
+        // Calculate offset based on position in octave
+        const shift = (blackKeyOffsets[i % 7] || 0) * whiteKeyWidth;
+        const leftPos = (i + 1) * whiteKeyWidth - blackKeyWidth / 2 + shift;
+
+        bk.style.left = leftPos + "%";
+        bk.style.width = blackKeyWidth + "%";
         this.container.appendChild(bk);
         this.midiToEl.set(midi + 1, bk);
 
-        // --- RESTORED PRELOAD ---
         if (this.audioProvider) this.audioProvider.preload(midi + 1);
       }
     }
@@ -95,7 +108,7 @@ export class PianoKeyboard {
     const el = this.midiToEl.get(midi);
     if (el) {
       el.classList.remove("active");
-      void el.offsetWidth; // Trigger reflow
+      void el.offsetWidth;
       el.classList.add("active");
       setTimeout(() => el.classList.remove("active"), 150);
     }
