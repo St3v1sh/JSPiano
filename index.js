@@ -189,6 +189,7 @@ class AutoPlayer {
     this.currentLineIdx = 0;
     this.charIdx = 0;
     this.visualQueue = [];
+    this.schedulingFinished = false;
     this.updateUI();
   }
 
@@ -228,6 +229,8 @@ class AutoPlayer {
     this.clearHighlight();
   }
 
+  // In index.js inside class AutoPlayer
+
   seek(lineIndex) {
     if (!this.songData || lineIndex < 0 || lineIndex >= this.rawLines.length)
       return;
@@ -240,6 +243,7 @@ class AutoPlayer {
     this.currentLineIdx = lineIndex;
     this.charIdx = 0;
     this.visualQueue = [];
+    this.schedulingFinished = false; // <--- ADD THIS LINE
 
     // Visual update immediate
     this.highlightLine(this.currentLineIdx);
@@ -262,6 +266,7 @@ class AutoPlayer {
     // While there are notes that will need to play before the next interval
     while (
       this.isPlaying &&
+      !this.schedulingFinished &&
       this.nextNoteTime < this.audio.getCurrentTime() + this.scheduleAheadTime
     ) {
       this.scheduleNextToken();
@@ -274,8 +279,15 @@ class AutoPlayer {
 
   scheduleNextToken() {
     // 1. Validate Boundaries
+    if (this.schedulingFinished) return;
+
     if (this.currentLineIdx >= this.rawLines.length) {
-      this.pause(); // Done
+      this.schedulingFinished = true;
+      this.queueVisual({
+        time: this.nextNoteTime + 1,
+        type: "stop_command",
+      });
+
       return;
     }
 
@@ -405,6 +417,11 @@ class AutoPlayer {
 
     while (this.visualQueue.length && this.visualQueue[0].time <= currentTime) {
       const event = this.visualQueue.shift();
+
+      if (event.type === "stop_command") {
+        this.stop();
+        return;
+      }
 
       // 1. Highlight Sheet Line
       if (event.lineIdx !== undefined) {
@@ -800,6 +817,46 @@ tempoValue.onclick = () => {
   tempoValue.innerText = "100%";
   player.setTempo(100);
 };
+
+// --- Focus Management ---
+
+function makeUiNonFocusable() {
+  const interactiveElements = document.querySelectorAll(
+    "button, select, input, [type='checkbox'], [type='range']",
+  );
+
+  interactiveElements.forEach((el) => {
+    // 1. Remove from tab order
+    el.setAttribute("tabindex", "-1");
+
+    // 2. Buttons & Checkboxes: Prevent focus entirely on click
+    if (el.tagName === "BUTTON" || el.type === "checkbox") {
+      el.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+      });
+    }
+
+    // 3. Select Dropdowns: Only blur on "change" (when an option is actually selected).
+    else if (el.tagName === "SELECT") {
+      el.addEventListener("change", function () {
+        this.blur(); // Remove focus after selection is made
+      });
+    }
+
+    // 4. Range Sliders: Blur after dragging stops
+    else if (el.type === "range") {
+      el.addEventListener("mouseup", function () {
+        this.blur();
+      });
+      el.addEventListener("change", function () {
+        this.blur();
+      });
+    }
+  });
+}
+
+// Initialize focus prevention
+makeUiNonFocusable();
 
 // --- Start ---
 build();
