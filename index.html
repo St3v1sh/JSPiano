@@ -24,9 +24,28 @@
 
             <!-- Playback Controls -->
             <div class="playback-controls">
-              <button id="btnPlay" class="control-btn wide-btn">▶ Play</button>
-              <button id="btnStop" class="control-btn wide-btn" disabled>
-                ■ Stop
+              <button
+                id="btnPlay"
+                class="control-btn wide-btn"
+                style="width: 100px"
+              >
+                <span class="icon-slot">
+                  <svg class="icon-svg" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+                <span class="label-slot">Play</span>
+              </button>
+              <button
+                id="btnStop"
+                class="control-btn wide-btn"
+                style="width: 100px"
+                disabled
+              >
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M6 6h12v12H6z" />
+                </svg>
+                <span>Stop</span>
               </button>
               <div class="tempo-control">
                 <input
@@ -76,13 +95,23 @@
         <div id="sidePanel" class="side-panel">
           <div class="side-group">
             <div class="side-label">Song</div>
-            <select id="sideSongSelect" class="side-select"></select>
+            <select id="sideSongSelect" class="side-select">
+              <option value="" disabled selected>Select Song...</option>
+            </select>
           </div>
           <div class="side-group">
             <div class="side-label">Playback</div>
             <div class="side-row">
-              <button id="sideBtnPlay" class="control-btn">▶</button>
-              <button id="sideBtnStop" class="control-btn" disabled>■</button>
+              <button id="sideBtnPlay" class="control-btn">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+              <button id="sideBtnStop" class="control-btn" disabled>
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M6 6h12v12H6z" />
+                </svg>
+              </button>
             </div>
           </div>
           <div class="side-group">
@@ -120,11 +149,15 @@
           <!-- Pagination Controls -->
           <div class="sheet-controls">
             <button id="btnPrev" class="control-btn" title="Previous Pages (-)">
-              -
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+              </svg>
             </button>
             <span id="pageIndicator">Pg 1-2</span>
             <button id="btnNext" class="control-btn" title="Next Pages (=)">
-              =
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+              </svg>
             </button>
           </div>
         </div>

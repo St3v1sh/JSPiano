@@ -21,6 +21,29 @@
   --border: #333;
 }
 
+/* --- SVG Icon Styling --- */
+.icon-svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Ensure wide buttons with icons look balanced */
+.wide-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+/* Adjust pagination icons to be slightly larger */
+.sheet-controls .icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
 body {
   background: var(--bg-page);
   color: var(--text-main);

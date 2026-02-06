@@ -6,6 +6,9 @@ import { PianoKeyboard } from "./ui/PianoKeyboard.js";
 import { SheetDisplay } from "./ui/SheetDisplay.js";
 
 // --- Initialize Core ---
+const ICON_PLAY = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+const ICON_PAUSE = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
 const audio = new AudioEngine();
 const logic = new MusicLogic();
 
@@ -133,14 +136,19 @@ scaleSelects.forEach((sel) => {
 // 4. Playback Controls Sync
 function updatePlayButtons(isPlaying) {
   playBtns.forEach((btn) => {
-    btn.innerText = isPlaying
-      ? btn.id.includes("side")
-        ? "II"
-        : "⏸ Pause"
-      : btn.id.includes("side")
-        ? "▶"
-        : "▶ Play";
+    const isSide = btn.id.includes("side");
+    const icon = isPlaying ? ICON_PAUSE : ICON_PLAY;
+
+    if (isSide) {
+      // Small side button: icon only
+      btn.innerHTML = icon;
+    } else {
+      // Main dashboard button: icon + text
+      const label = isPlaying ? "Pause" : "Play";
+      btn.innerHTML = `${icon} <span>${label}</span>`;
+    }
   });
+
   stopBtns.forEach((btn) => {
     btn.disabled = !isPlaying && player.currentLineIdx === 0;
   });
