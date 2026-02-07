@@ -82,6 +82,33 @@ const hintToggles = [
 ];
 const sidePanel = document.getElementById("sidePanel");
 
+// --- Modal Logic ---
+const btnBindings = document.getElementById("btnBindings");
+const bindingsModal = document.getElementById("bindingsModal");
+const btnCloseBindings = document.getElementById("btnCloseBindings");
+
+btnBindings.onclick = () => {
+  bindingsModal.classList.add("open");
+};
+
+const closeBindings = () => {
+  bindingsModal.classList.remove("open");
+};
+
+btnCloseBindings.onclick = closeBindings;
+
+// Close when clicking outside the modal window
+bindingsModal.onclick = (e) => {
+  if (e.target === bindingsModal) closeBindings();
+};
+
+// Close on Escape key
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && bindingsModal.classList.contains("open")) {
+    closeBindings();
+  }
+});
+
 // 1. Initial Song/Scale Population
 musicLibrary.forEach((song, index) => {
   songSelects.forEach((sel) => {
