@@ -17,6 +17,7 @@ export const musicLibrary = [
     artist: "Wintergatan",
     bpm: 500,
     scale: "G Major",
+    bindings: {},
     sheet: `
       -0 ---
       [0f]... [wr].a. .... [wr].p.
@@ -139,6 +140,7 @@ export const musicLibrary = [
     artist: "Junichi Masuda",
     bpm: 384,
     scale: "G Major",
+    bindings: {},
     sheet: `
       -1 ---
       [wd]. [rs]. [ya]. [rp]. [0h]. [rf]. [qg]. [rf].
@@ -199,6 +201,9 @@ export const musicLibrary = [
     artist: "C418",
     bpm: 296,
     scale: "C Major",
+    bindings: {
+      "[": { norm: "$" },
+    },
     sheet: `
       -1 ---
       [wu]. e. u. t... u.....
@@ -264,6 +269,7 @@ export const musicLibrary = [
     artist: "C418",
     bpm: 150,
     scale: "A Major",
+    bindings: {},
     sheet: `
       -0 ---
       60 er tr e0
@@ -312,6 +318,10 @@ export const musicLibrary = [
     artist: "Debug",
     bpm: 200,
     scale: "C Major",
+    bindings: {
+      "[": { norm: "t", shift: "y" },
+      "]": { norm: "u", shift: "i" },
+    },
     sheet: `
       . . . .
       t t t t

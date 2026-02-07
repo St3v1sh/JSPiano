@@ -34,10 +34,52 @@ export class MusicLogic {
     };
 
     this.currentScale = "C Major";
+
+    // Storage for special key re-mapping
+    this.customBindings = {};
+  }
+
+  setBindings(bindingsObj) {
+    this.customBindings = bindingsObj || {};
   }
 
   getMidi(input, isShift) {
-    const char = this.shiftMap[input] || input.toLowerCase();
+    // Map shifted special characters back to their base keys for binding lookup
+    const specialShiftToBase = {
+      "{": "[",
+      "}": "]",
+      ":": ";",
+      '"': "'",
+      "<": ",",
+      ">": ".",
+      "?": "/",
+    };
+
+    // Determine if the input character itself implies a Shift press (e.g., '{')
+    const isCharShifted = !!specialShiftToBase[input];
+    // The key used to look up the binding (e.g., '{' becomes '[')
+    const lookupKey = specialShiftToBase[input] || input;
+
+    const binding = this.customBindings[lookupKey];
+
+    let targetKey = input;
+    let targetShift = isShift || isCharShifted;
+
+    if (binding) {
+      // Use the shift mapping if the physical Shift key is held OR if
+      // the character typed is a shifted symbol (like '{')
+      const mapping = isShift || isCharShifted ? binding.shift : binding.norm;
+
+      if (mapping) {
+        targetKey = mapping.toLowerCase();
+        // If the mapped character is uppercase (e.g., 'S') or a symbol (e.g., '!'),
+        // it forces the logic into Shift mode for that note.
+        targetShift = /[A-Z]/.test(mapping) || !!this.shiftMap[mapping];
+      }
+    }
+
+    // Standard logic continues with the translated targetKey and targetShift
+    const char = this.shiftMap[targetKey] || targetKey.toLowerCase();
     const idx = this.keyMap.indexOf(char);
     if (idx === -1) return null;
 
@@ -46,9 +88,9 @@ export class MusicLogic {
 
     const scale = this.scales[this.currentScale];
     if (scale.notes.includes(name)) {
-      return isShift ? midi : scale.sharps ? midi + 1 : midi - 1;
+      return targetShift ? midi : scale.sharps ? midi + 1 : midi - 1;
     }
-    return isShift ? midi + 1 : midi;
+    return targetShift ? midi + 1 : midi;
   }
 
   midiToName(m) {

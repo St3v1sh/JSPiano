@@ -109,6 +109,59 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// --- Re-binder Logic ---
+const bindInputs = document.querySelectorAll(".bind-input");
+
+function updateLogicBindings() {
+  const newBindings = {};
+  bindInputs.forEach((input) => {
+    const key = input.dataset.key;
+    const type = input.dataset.type; // 'norm' or 'shift'
+    const val = input.value;
+
+    if (!newBindings[key]) newBindings[key] = { norm: "", shift: "" };
+    newBindings[key][type] = val;
+  });
+  logic.setBindings(newBindings);
+}
+
+function syncBindingUI(bindings) {
+  bindInputs.forEach((input) => {
+    const key = input.dataset.key;
+    const type = input.dataset.type;
+    input.value = (bindings && bindings[key] && bindings[key][type]) || "";
+  });
+  updateLogicBindings();
+}
+
+// Attach listeners to modal inputs
+bindInputs.forEach((input) => {
+  input.addEventListener("input", () => {
+    updateLogicBindings();
+  });
+});
+
+// Update the song selection logic to load presets
+songSelects.forEach((sel) => {
+  sel.onchange = (e) => {
+    const idx = e.target.value;
+    const song = musicLibrary[idx];
+    songSelects.forEach((s) => (s.value = idx));
+
+    player.load(song);
+    sheetUI.load(song);
+
+    // Sync bindings from the song data
+    syncBindingUI(song.bindings);
+
+    if (logic.scales[song.scale]) {
+      scaleSelects.forEach((ss) => (ss.value = song.scale));
+      logic.setScale(song.scale);
+      pianoUI.updateLabels();
+    }
+  };
+});
+
 // 1. Initial Song/Scale Population
 musicLibrary.forEach((song, index) => {
   songSelects.forEach((sel) => {
@@ -128,20 +181,26 @@ Object.keys(logic.scales).forEach((s) => {
   });
 });
 
-// Force sync initial state
-songSelects[1].value = songSelects[0].value;
-scaleSelects[1].value = scaleSelects[0].value;
+// --- Load Initial Song State ---
+syncBindingUI({});
 
-// 2. Synchronized Song Selection
+// 2. Consolidated Synchronized Song Selection
 songSelects.forEach((sel) => {
   sel.onchange = (e) => {
     const idx = e.target.value;
     const song = musicLibrary[idx];
+
+    // Sync all song dropdowns (Main and Side Panel)
     songSelects.forEach((s) => (s.value = idx));
 
+    // Load music into engines
     player.load(song);
     sheetUI.load(song);
 
+    // Load the bindings from the song object
+    syncBindingUI(song.bindings);
+
+    // Load scale if song defines one
     if (logic.scales[song.scale]) {
       scaleSelects.forEach((ss) => (ss.value = song.scale));
       logic.setScale(song.scale);
@@ -246,6 +305,9 @@ window.addEventListener("resize", updateSidePanelVisibility);
 // 7. Keyboard Interactions
 window.addEventListener("keydown", (e) => {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+
+  // Check if we are typing in the modal inputs
+  if (e.target.classList.contains("bind-input")) return;
 
   // Pagination shortcuts
   if (e.key === "-" || e.key === "_") {
