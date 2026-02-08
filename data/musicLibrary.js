@@ -269,7 +269,10 @@ export const musicLibrary = [
     artist: "C418",
     bpm: 150,
     scale: "A Major",
-    bindings: {},
+    bindings: {
+      "[": { norm: "%" },
+      "]": { norm: "W" },
+    },
     sheet: `
       -0 ---
       60 er tr e0

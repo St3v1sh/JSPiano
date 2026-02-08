@@ -6,7 +6,7 @@ export class AudioEngine {
 
   init() {
     if (this.ctx) return;
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.ctx = new (window.AudioContext || window.AudioContext)();
   }
 
   getFileName(midi) {
@@ -46,6 +46,9 @@ export class AudioEngine {
   }
 
   play(midi, time = 0) {
+    // Only 72 notes on the keyboard.
+    if (midi > 72) return;
+
     this.init();
     if (this.ctx.state === "suspended") this.ctx.resume();
 

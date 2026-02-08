@@ -110,7 +110,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 // --- Re-binder Logic ---
-const bindInputs = document.querySelectorAll(".bind-input");
+const bindInputs = Array.from(document.querySelectorAll(".bind-input"));
 
 function updateLogicBindings() {
   const newBindings = {};
@@ -134,32 +134,50 @@ function syncBindingUI(bindings) {
   updateLogicBindings();
 }
 
-// Attach listeners to modal inputs
-bindInputs.forEach((input) => {
-  input.addEventListener("input", () => {
-    updateLogicBindings();
-  });
-});
-
-// Update the song selection logic to load presets
-songSelects.forEach((sel) => {
-  sel.onchange = (e) => {
-    const idx = e.target.value;
-    const song = musicLibrary[idx];
-    songSelects.forEach((s) => (s.value = idx));
-
-    player.load(song);
-    sheetUI.load(song);
-
-    // Sync bindings from the song data
-    syncBindingUI(song.bindings);
-
-    if (logic.scales[song.scale]) {
-      scaleSelects.forEach((ss) => (ss.value = song.scale));
-      logic.setScale(song.scale);
-      pianoUI.updateLabels();
-    }
+bindInputs.forEach((input, index) => {
+  const numInputs = bindInputs.length;
+  const lastInput = bindInputs[(index + numInputs - 1) % numInputs];
+  const nextInput = bindInputs[(index + 1) % numInputs];
+  const functionalKeyMaps = {
+    Tab: (shift) => {
+      if (shift) lastInput.focus();
+      else nextInput.focus();
+    },
+    Backspace: () => {
+      input.value = "";
+      updateLogicBindings();
+    },
+    Delete: () => {
+      input.value = "";
+      updateLogicBindings();
+    },
+    ArrowLeft: () => lastInput.focus(),
+    ArrowRight: () => nextInput.focus(),
   };
+
+  input.addEventListener("keydown", (e) => {
+    // 1. Allow functional keys (Backspace to clear, Tab to navigate, etc.)
+    e.preventDefault();
+    if (functionalKeyMaps[e.key]) {
+      functionalKeyMaps[e.key](e.shiftKey);
+      return;
+    }
+
+    // 2. Intercept character typing
+    const char = e.key;
+
+    // 3. Test if valid piano input
+    if (logic.isValidPianoChar(char)) {
+      input.value = char;
+      updateLogicBindings();
+
+      // 4. Automatically focus the next input
+      nextInput.focus();
+      nextInput.select();
+    }
+  });
+
+  input.addEventListener("focus", () => input.select());
 });
 
 // 1. Initial Song/Scale Population

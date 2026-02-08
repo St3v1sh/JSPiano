@@ -116,4 +116,11 @@ export class MusicLogic {
       this.currentScale = scaleName;
     }
   }
+
+  isValidPianoChar(char) {
+    if (!char || char.length !== 1) return false;
+    const low = char.toLowerCase();
+    // Valid if it's in the base keyMap or is a shift-symbol in the shiftMap
+    return this.keyMap.includes(low) || !!this.shiftMap[char];
+  }
 }
