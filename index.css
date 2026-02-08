@@ -1,52 +1,65 @@
 :root {
-  /* Dark Mode Palette */
-  --bg-page: #121212;
-  --bg-panel: #1e1e1e;
+  /* --- Palette: Brand & Accents --- */
+  --accent-primary: #8364ff;
+  --accent-secondary: #ffca28;
+  --accent-active-line: rgba(92, 80, 255, 0.2);
+  --piano-felt-red: #800;
+
+  /* --- Palette: Background Surfaces --- */
+  --bg-app: #121212; /* Main body */
+  --bg-panel: #1e1e1e; /* Dashboard, Side panels */
+  --bg-surface-1: #1a1a1a; /* Darker elements, key sides */
+  --bg-surface-2: #2a2a2a; /* Inputs, Buttons */
+  --bg-surface-3: #252525; /* Secondary containers */
+  --bg-surface-hover: #333333;
+
+  /* --- Palette: Piano Specifics --- */
   --bg-piano-dark: #0a0a0a;
   --bg-piano-wood: #181818;
+  --piano-black-key: #111111;
+  --piano-black-key-active: #000000;
+  --piano-white-key: #f0f0f0;
+  --piano-white-key-active: #d1d1d1;
 
+  /* --- Palette: Text --- */
   --text-main: #e0e0e0;
   --text-muted: #888888;
+  --text-dark: #555555; /* Labels on light/gray backgrounds */
+  --text-inverse: #ffffff;
 
-  --accent: #8364ff;
-  --accent-secondary: #ffca28;
-  /* Used for the active playback line on the sheet */
-  --accent-active-line: rgba(92, 80, 255, 0.2);
+  /* --- Palette: Borders & Dividers --- */
+  --border-subtle: #333333;
+  --border-strong: #111111;
+  --border-input: #555555;
 
-  --key-white: #f0f0f0;
-  --key-white-active: #d1d1d1;
-  --key-black: #111111;
-  --key-black-active: #000000;
+  /* --- Effects --- */
+  --shadow-key: rgba(0, 0, 0, 0.2);
+  --shadow-depth: rgba(0, 0, 0, 0.5);
+  --shadow-floating: 0 10px 40px rgba(0, 0, 0, 0.6);
+  --pattern-wood: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
 
-  --border: #333;
+  /* --- Layers (Z-Index) --- */
+  --z-piano-keys: 1;
+  --z-piano-sharps: 2;
+  --z-sticky-header: 1000;
+  --z-side-panel: 2000;
+  --z-modal-overlay: 3000;
 }
 
-/* --- SVG Icon Styling --- */
-.icon-svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* Ensure wide buttons with icons look balanced */
-.wide-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  flex-shrink: 0;
-}
-
-/* Adjust pagination icons to be slightly larger */
-.sheet-controls .icon-svg {
-  width: 20px;
-  height: 20px;
-}
-
+/* =========================================
+   Global & Reset
+   ========================================= */
 body {
-  background: var(--bg-page);
+  background: var(--bg-app);
   color: var(--text-main);
   font-family: "Segoe UI", system-ui, sans-serif;
   margin: 0;
@@ -55,13 +68,82 @@ body {
   user-select: none;
 }
 
-/* --- Sticky Positioning Logic --- */
+.icon-svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* =========================================
+   UI Components: Buttons & Inputs
+   ========================================= */
+.wide-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  flex-shrink: 0;
+  width: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.control-btn {
+  background: var(--bg-app);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  min-width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  border-color: var(--text-dark);
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+select {
+  background: var(--bg-surface-2);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+input[type="range"] {
+  width: 80px;
+  height: 4px;
+  accent-color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* =========================================
+   Layout: Dashboard / Header
+   ========================================= */
 .piano-sticky-wrapper {
   position: sticky;
   top: -180px;
-  z-index: 1000;
+  z-index: var(--z-sticky-header);
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px var(--shadow-depth);
 }
 
 .piano-assembly {
@@ -70,7 +152,6 @@ body {
   background: var(--bg-piano-dark);
 }
 
-/* --- Dashboard --- */
 .dashboard {
   background: var(--bg-panel);
   height: 60px;
@@ -79,7 +160,7 @@ body {
   gap: 10px;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .left-controls,
@@ -94,26 +175,13 @@ body {
   font-weight: 800;
   font-size: 18px;
   letter-spacing: 2px;
-  color: var(--accent);
+  color: var(--accent-primary);
 }
 
 .separator {
   width: 1px;
   height: 24px;
-  background: var(--border);
-}
-
-/* --- Controls --- */
-select {
-  background: #2a2a2a;
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.2s;
+  background: var(--border-subtle);
 }
 
 .song-picker {
@@ -133,66 +201,25 @@ select {
 }
 
 .toggle-container input {
-  accent-color: var(--accent);
+  accent-color: var(--accent-primary);
   cursor: pointer;
 }
 
-/* Playback Controls */
 .playback-controls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.wide-btn {
-  width: auto;
-  padding: 0 15px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.control-btn {
-  background: var(--bg-page);
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  min-width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.control-btn:hover:not(:disabled) {
-  background: #333;
-  border-color: #555;
-}
-
-.control-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  background: transparent;
-}
-
 .tempo-control {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #2a2a2a;
+  background: var(--bg-surface-2);
   padding: 0 10px;
   height: 32px;
   border-radius: 4px;
-  border: 1px solid var(--border);
-}
-
-input[type="range"] {
-  width: 80px;
-  height: 4px;
-  accent-color: #888; /* Neutral grey slider */
-  cursor: pointer;
+  border: 1px solid var(--border-subtle);
 }
 
 #tempoValue {
@@ -209,7 +236,9 @@ input[type="range"] {
   text-decoration: underline;
 }
 
-/* --- Piano Body & Cheeks --- */
+/* =========================================
+   Component: Piano Visuals
+   ========================================= */
 .piano-body {
   display: flex;
   width: 100%;
@@ -222,35 +251,17 @@ input[type="range"] {
   width: 100%;
   height: 8px;
   background: var(--bg-piano-dark);
-  background-image: linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.2) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.2) 75%,
-    transparent 75%,
-    transparent
-  );
+  background-image: var(--pattern-wood);
   background-size: 4px 4px;
 }
 
 .cheek-block {
   flex-grow: 1;
   background: var(--bg-piano-wood);
-  background-image: linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.2) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.2) 75%,
-    transparent 75%,
-    transparent
-  );
+  background-image: var(--pattern-wood);
   background-size: 4px 4px;
-  border-bottom: 1px solid #000;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--border-strong);
+  box-shadow: inset 0 0 20px var(--shadow-depth);
 }
 
 .piano-frame {
@@ -264,18 +275,18 @@ input[type="range"] {
 
 .fallboard {
   height: 20px;
-  background-color: #000;
+  background-color: var(--border-strong);
 }
 
 .keys-wrapper {
   position: relative;
   flex-grow: 1;
-  background: #000;
+  background: var(--border-strong);
   overflow: hidden;
-  border-top: 4px solid #800;
+  border-top: 4px solid var(--piano-felt-red);
 }
 
-/* --- Keys --- */
+/* --- Piano Keys --- */
 .key {
   position: absolute;
   cursor: pointer;
@@ -292,42 +303,40 @@ input[type="range"] {
 }
 
 .white-key {
-  background: var(--key-white);
+  background: var(--piano-white-key);
   width: calc(100% / 36 + 1px);
   height: calc(100% - 2px);
-  border-bottom: 4px solid var(--border);
+  border-bottom: 4px solid var(--border-subtle);
   border-radius: 0 0 6px 6px;
-  z-index: 1;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: var(--z-piano-keys);
+  box-shadow: inset 0 0 10px var(--shadow-key);
 }
 
 .black-key {
-  background: var(--key-black);
+  background: var(--piano-black-key);
   height: 60%;
   border-radius: 0 0 4px 4px;
-  z-index: 2;
-  border: 1px solid #000;
-  border-bottom: 3px solid var(--border);
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: var(--z-piano-sharps);
+  border: 1px solid var(--border-strong);
+  border-bottom: 3px solid var(--border-subtle);
+  box-shadow: 2px 2px 5px var(--shadow-depth);
 }
 
 .white-key.active {
-  background: var(--key-white-active);
+  background: var(--piano-white-key-active);
   transform: translateY(2px);
-  box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 -2px 5px var(--shadow-key);
   border-bottom: none;
 }
 
 .black-key.active {
-  background: var(--key-black-active);
+  background: var(--piano-black-key-active);
   height: calc(60% + 2px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 /* --- Note Labels --- */
-.hide-notes .note-name {
-  display: none;
-}
+.hide-notes .note-name,
 .hide-hints .key-hint {
   display: none;
 }
@@ -336,24 +345,26 @@ input[type="range"] {
   font-size: 11px;
   font-weight: 700;
   margin-bottom: 2px;
-  color: #555;
+  color: var(--text-dark);
 }
 
 .key-hint {
   font-size: 10px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-primary);
   opacity: 0.9;
 }
 
 .black-key .note-name {
-  color: #888;
+  color: var(--text-muted);
 }
 .black-key .key-hint {
   color: var(--accent-secondary);
 }
 
-/* --- Sheet Music Display --- */
+/* =========================================
+   Component: Sheet Music Display
+   ========================================= */
 .app-container {
   max-width: 1000px;
   margin: 40px auto;
@@ -366,7 +377,7 @@ input[type="range"] {
   background: var(--bg-panel);
   border-radius: 8px;
   padding: 30px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   min-height: 500px;
 }
 
@@ -375,13 +386,13 @@ input[type="range"] {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 15px;
 }
 
 .sheet-header h2 {
   margin: 0 0 5px 0;
-  color: var(--accent);
+  color: var(--accent-primary);
 }
 
 .sheet-meta {
@@ -395,10 +406,15 @@ input[type="range"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #252525;
+  background: var(--bg-surface-3);
   padding: 5px 10px;
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
+}
+
+.sheet-controls .icon-svg {
+  width: 20px;
+  height: 20px;
 }
 
 #pageIndicator {
@@ -419,7 +435,7 @@ input[type="range"] {
 
 .sheet-divider {
   width: 1px;
-  background: var(--border);
+  background: var(--border-subtle);
   align-self: stretch;
 }
 
@@ -432,24 +448,24 @@ input[type="range"] {
   min-width: 0;
 }
 
-/* Sheet Line Styling & Interaction */
+/* Sheet Line Styling */
 .sheet-line {
   display: block;
   padding: 0 4px;
   border-radius: 2px;
   min-height: 1.6em;
-  cursor: pointer; /* Indicates clickable */
+  cursor: pointer;
   transition: background-color 0.1s;
 }
 
 .sheet-line:hover {
-  background-color: rgba(255, 255, 255, 0.05); /* Subtle hover effect */
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .sheet-line.active-line {
   background-color: var(--accent-active-line);
-  color: #fff;
-  box-shadow: -4px 0 0 var(--accent); /* Left border indicator */
+  color: var(--text-inverse);
+  box-shadow: -4px 0 0 var(--accent-primary);
 }
 
 .footer {
@@ -460,7 +476,9 @@ input[type="range"] {
   padding-bottom: 20px;
 }
 
-/* --- Floating Side Panel Styles --- */
+/* =========================================
+   Component: Floating Side Panel
+   ========================================= */
 .side-panel-track {
   position: absolute;
   top: 0;
@@ -472,17 +490,16 @@ input[type="range"] {
 .side-panel {
   position: sticky;
   top: 160px;
-
   width: 150px;
   background: var(--bg-panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-  z-index: 2000;
+  box-shadow: var(--shadow-floating);
+  z-index: var(--z-side-panel);
 
   opacity: 0;
   transform: translateX(30px);
@@ -523,9 +540,9 @@ input[type="range"] {
 
 .side-select {
   width: 100%;
-  background: #2a2a2a;
+  background: var(--bg-surface-2);
   color: var(--text-main);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   padding: 5px;
   font-size: 11px;
   border-radius: 4px;
@@ -540,7 +557,7 @@ input[type="range"] {
   width: 100%;
 }
 
-/* --- Mini Rebinder --- */
+/* Mini Rebinder in Side Panel */
 .side-group.clickable {
   cursor: pointer;
   transition: opacity 0.2s;
@@ -550,7 +567,7 @@ input[type="range"] {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #111;
+  background: var(--border-strong);
   padding: 2px;
   border-radius: 2px;
 }
@@ -563,8 +580,8 @@ input[type="range"] {
 
 .mini-key {
   flex: 1;
-  background: #2a2a2a;
-  border-bottom: 2px solid #1a1a1a;
+  background: var(--bg-surface-2);
+  border-bottom: 2px solid var(--bg-surface-1);
   border-radius: 2px;
   display: flex;
   align-items: center;
@@ -586,7 +603,6 @@ input[type="range"] {
   flex: 2;
 }
 
-/* Dynamic Content Styling */
 .mini-key.dynamic {
   flex-direction: row;
   justify-content: space-evenly;
@@ -597,7 +613,6 @@ input[type="range"] {
   transition: color 0.2s;
 }
 
-/* Colors for bound/unbound states */
 .color-muted {
   color: var(--text-muted);
 }
@@ -605,20 +620,20 @@ input[type="range"] {
   color: var(--accent-secondary);
 }
 
-/* Static keys (I, O, P, etc) just stay dark */
 .mini-key.static {
   opacity: 0.5;
   font-size: 9px;
 }
 
-/* Hide side panel on smaller screens even if scrolled */
 @media (max-width: 1510px) {
   .side-panel.visible {
     display: none;
   }
 }
 
-/* --- Modal Styles --- */
+/* =========================================
+   Component: Modals
+   ========================================= */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -629,7 +644,7 @@ input[type="range"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3000;
+  z-index: var(--z-modal-overlay);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -643,13 +658,13 @@ input[type="range"] {
 
 .modal-window {
   background: var(--bg-panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   max-width: 90%;
   padding: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px var(--shadow-depth);
   transform: translateY(20px);
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.2s ease-in-out;
 }
 
 .modal-overlay.open .modal-window {
@@ -661,19 +676,21 @@ input[type="range"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 15px;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: var(--accent);
+  color: var(--accent-primary);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
 
-/* --- Key Re-binder UI --- */
+/* =========================================
+   Component: Key Re-binder (3D Keycaps)
+   ========================================= */
 .rebinder-container {
   display: flex;
   flex-direction: column;
@@ -685,8 +702,8 @@ input[type="range"] {
 
 .rebinder-row {
   display: flex;
-  background: #111; /* Bottom shadow color */
-  padding: 3px; /* Gutter equivalent */
+  background: var(--border-strong);
+  padding: 3px;
   gap: 3px;
   margin-top: -3px;
   border-radius: 4px;
@@ -704,15 +721,15 @@ input[type="range"] {
   grid-template-rows: 8px 1fr 30px;
 }
 
-/* Key Base/Sides (The "Skirt") */
+/* Key Base (The "Skirt") */
 .keycap::before {
   content: "";
   grid-column: 1 / -1;
   grid-row: 1 / -1;
-  background: #2a2a2a;
+  background: var(--bg-surface-2);
   border-style: solid;
   border-width: 10px 22px 30px 22px;
-  border-color: var(--border) #2a2a2a #1a1a1a;
+  border-color: var(--border-subtle) var(--bg-surface-2) var(--bg-surface-1);
   border-radius: 3px;
 }
 
@@ -721,7 +738,7 @@ input[type="range"] {
   content: "";
   grid-column: 2;
   grid-row: 2;
-  border: 2px solid #555;
+  border: 2px solid var(--text-dark);
   border-bottom: none;
   border-radius: 4px;
   background: linear-gradient(
@@ -737,7 +754,6 @@ input[type="range"] {
   background: none;
 }
 
-/* All labels and controls must live on the Top Face (Grid Column 2, Row 2) */
 .keycap-label-row,
 .keycap-input-area {
   z-index: 2;
@@ -785,8 +801,8 @@ input[type="range"] {
 
 .bind-input {
   width: 100%;
-  background: var(--bg-page);
-  border: 1px solid var(--border);
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
   border-radius: 3px;
   color: var(--accent-secondary);
   text-align: center;
@@ -796,13 +812,12 @@ input[type="range"] {
   font-family: monospace;
   outline: none;
   transition: all 0.2s;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 3px var(--shadow-depth);
 }
 
-/* Neutral Focus Glow */
 .bind-input:focus {
-  background: #333;
-  border-color: #555;
+  background: var(--bg-surface-hover);
+  border-color: var(--text-dark);
 }
 
 .input-sublabel {
@@ -818,6 +833,6 @@ input[type="range"] {
   font-size: 11px;
   color: var(--text-muted);
   text-align: center;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 15px;
 }
