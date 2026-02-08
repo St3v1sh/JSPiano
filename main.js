@@ -81,6 +81,7 @@ const hintToggles = [
   document.getElementById("sideToggleHints"),
 ];
 const sidePanel = document.getElementById("sidePanel");
+const sideBindingsTrigger = document.getElementById("sideBindingsTrigger");
 
 // --- Modal Logic ---
 const btnBindings = document.getElementById("btnBindings");
@@ -88,6 +89,10 @@ const bindingsModal = document.getElementById("bindingsModal");
 const btnCloseBindings = document.getElementById("btnCloseBindings");
 
 btnBindings.onclick = () => {
+  bindingsModal.classList.add("open");
+};
+
+sideBindingsTrigger.onclick = () => {
   bindingsModal.classList.add("open");
 };
 
@@ -111,6 +116,17 @@ window.addEventListener("keydown", (e) => {
 
 // --- Re-binder Logic ---
 const bindInputs = Array.from(document.querySelectorAll(".bind-input"));
+const miniKeys = Array.from(document.querySelectorAll(".mini-key.dynamic"));
+
+const defaultSpecialBindKeyMap = {
+  "[": { n: "[", s: "{" },
+  "]": { n: "]", s: "}" },
+  ";": { n: ";", s: ":" },
+  "'": { n: "'", s: '"' },
+  ",": { n: ",", s: "<" },
+  ".": { n: ".", s: ">" },
+  "/": { n: "/", s: "?" },
+};
 
 function updateLogicBindings() {
   const newBindings = {};
@@ -125,12 +141,38 @@ function updateLogicBindings() {
   logic.setBindings(newBindings);
 }
 
+function updateSideBindingsDisplay(bindings) {
+  miniKeys.forEach((el) => {
+    const key = el.dataset.key;
+    const normSpan = el.querySelector(".lbl-norm");
+    const shiftSpan = el.querySelector(".lbl-shift");
+
+    const def = defaultSpecialBindKeyMap[key];
+    const bind = bindings[key] || {};
+
+    // Norm Logic
+    const normVal = bind.norm || def.n;
+    normSpan.innerText = normVal;
+    // If it's bound (exists and not empty), use accent color. Otherwise muted.
+    normSpan.className =
+      "lbl-norm " + (bind.norm ? "color-active" : "color-muted");
+
+    // Shift Logic
+    const shiftVal = bind.shift || def.s;
+    shiftSpan.innerText = shiftVal;
+    shiftSpan.className =
+      "lbl-shift " + (bind.shift ? "color-active" : "color-muted");
+  });
+}
+
 function syncBindingUI(bindings) {
   bindInputs.forEach((input) => {
     const key = input.dataset.key;
     const type = input.dataset.type;
     input.value = (bindings && bindings[key] && bindings[key][type]) || "";
   });
+
+  updateSideBindingsDisplay(bindings || {});
   updateLogicBindings();
 }
 
@@ -156,22 +198,22 @@ bindInputs.forEach((input, index) => {
   };
 
   input.addEventListener("keydown", (e) => {
-    // 1. Allow functional keys (Backspace to clear, Tab to navigate, etc.)
+    // Allow functional keys (Backspace to clear, Tab to navigate, etc.)
     e.preventDefault();
     if (functionalKeyMaps[e.key]) {
       functionalKeyMaps[e.key](e.shiftKey);
       return;
     }
 
-    // 2. Intercept character typing
+    // Intercept character typing
     const char = e.key;
 
-    // 3. Test if valid piano input
+    // Test if valid piano input
     if (logic.isValidPianoChar(char)) {
       input.value = char;
       updateLogicBindings();
 
-      // 4. Automatically focus the next input
+      // Automatically focus the next input
       nextInput.focus();
       nextInput.select();
     }

@@ -358,7 +358,7 @@ input[type="range"] {
   max-width: 1000px;
   margin: 40px auto;
   padding: 0 20px;
-  padding-bottom: 160px;
+  padding-bottom: 120px;
   position: relative;
 }
 
@@ -538,6 +538,77 @@ input[type="range"] {
 
 #sideTempoSlider {
   width: 100%;
+}
+
+/* --- Mini Rebinder --- */
+.side-group.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mini-rebinder {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #111;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+.mini-row {
+  display: flex;
+  gap: 2px;
+  height: 24px;
+}
+
+.mini-key {
+  flex: 1;
+  background: #2a2a2a;
+  border-bottom: 2px solid #1a1a1a;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mini-key.wide {
+  flex: 1.5;
+}
+.mini-key.wider {
+  flex: 2;
+}
+
+/* Dynamic Content Styling */
+.mini-key.dynamic {
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 0 1px;
+}
+
+.mini-key span {
+  transition: color 0.2s;
+}
+
+/* Colors for bound/unbound states */
+.color-muted {
+  color: var(--text-muted);
+}
+.color-active {
+  color: var(--accent-secondary);
+}
+
+/* Static keys (I, O, P, etc) just stay dark */
+.mini-key.static {
+  opacity: 0.5;
+  font-size: 9px;
 }
 
 /* Hide side panel on smaller screens even if scrolled */
