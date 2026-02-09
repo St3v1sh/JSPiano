@@ -10,6 +10,8 @@ const ICON_PLAY = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11
 const ICON_PAUSE = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
 const audio = new AudioEngine();
+audio.setVolume(0.8);
+
 const logic = new MusicLogic();
 
 // --- Initialize UI ---
@@ -64,6 +66,14 @@ const stopBtns = [
   document.getElementById("btnStop"),
   document.getElementById("sideBtnStop"),
 ];
+const volumeSliders = [
+  document.getElementById("volumeSlider"),
+  document.getElementById("sideVolumeSlider"),
+];
+const volumeLabels = [
+  document.getElementById("volumeValue"),
+  document.getElementById("sideVolumeValue"),
+];
 const tempoSliders = [
   document.getElementById("tempoSlider"),
   document.getElementById("sideTempoSlider"),
@@ -80,15 +90,17 @@ const hintToggles = [
   document.getElementById("toggleHints"),
   document.getElementById("sideToggleHints"),
 ];
+const btnSettings = document.getElementById("btnSettings");
+const settingsDropdown = document.getElementById("settingsDropdown");
 const sidePanel = document.getElementById("sidePanel");
 const sideBindingsTrigger = document.getElementById("sideBindingsTrigger");
 
 // --- Modal Logic ---
-const btnBindings = document.getElementById("btnBindings");
+const dashboardBindings = document.getElementById("dashboardBindings");
 const bindingsModal = document.getElementById("bindingsModal");
 const btnCloseBindings = document.getElementById("btnCloseBindings");
 
-btnBindings.onclick = () => {
+dashboardBindings.onclick = () => {
   bindingsModal.classList.add("open");
 };
 
@@ -112,6 +124,45 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && bindingsModal.classList.contains("open")) {
     closeBindings();
   }
+});
+
+// --- Settings Dropdown Logic ---
+btnSettings.onclick = (e) => {
+  e.stopPropagation(); // Prevent immediate close
+  settingsDropdown.classList.toggle("active");
+};
+
+// Close settings when clicking outside
+window.addEventListener("click", (e) => {
+  if (
+    !settingsDropdown.contains(e.target) &&
+    e.target !== btnSettings &&
+    !btnSettings.contains(e.target)
+  ) {
+    settingsDropdown.classList.remove("active");
+  }
+});
+
+// --- Volume Logic ---
+volumeSliders.forEach((slider) => {
+  slider.oninput = (e) => {
+    const val = e.target.value;
+    // Sync UI
+    volumeSliders.forEach((s) => (s.value = val));
+    volumeLabels.forEach((l) => (l.innerText = val + "%"));
+    // Update Engine
+    audio.setVolume(val / 100);
+  };
+});
+
+volumeLabels.forEach((label) => {
+  label.onclick = () => {
+    // Reset to 80% on click
+    const resetVal = 80;
+    volumeSliders.forEach((s) => (s.value = resetVal));
+    volumeLabels.forEach((l) => (l.innerText = resetVal + "%"));
+    audio.setVolume(resetVal / 100);
+  };
 });
 
 // --- Re-binder Logic ---
@@ -282,17 +333,8 @@ scaleSelects.forEach((sel) => {
 // 4. Playback Controls Sync
 function updatePlayButtons(isPlaying) {
   playBtns.forEach((btn) => {
-    const isSide = btn.id.includes("side");
     const icon = isPlaying ? ICON_PAUSE : ICON_PLAY;
-
-    if (isSide) {
-      // Small side button: icon only
-      btn.innerHTML = icon;
-    } else {
-      // Main dashboard button: icon + text
-      const label = isPlaying ? "Pause" : "Play";
-      btn.innerHTML = `${icon} <span>${label}</span>`;
-    }
+    btn.innerHTML = icon;
   });
 
   stopBtns.forEach((btn) => {

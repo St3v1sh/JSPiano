@@ -15,8 +15,6 @@
         <!-- Dashboard / Controls -->
         <div class="dashboard">
           <div class="left-controls">
-            <span class="brand">JS Piano</span>
-            <div class="separator"></div>
             <select id="songSelect" class="song-picker">
               <option value="" disabled selected>Select Song...</option>
             </select>
@@ -25,51 +23,122 @@
 
             <!-- Playback Controls -->
             <div class="playback-controls">
-              <button
-                id="btnPlay"
-                class="control-btn wide-btn"
-                style="width: 100px"
-              >
-                <span class="icon-slot">
-                  <svg class="icon-svg" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </span>
-                <span class="label-slot">Play</span>
+              <button id="btnPlay" class="control-btn" style="width: 70px">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </button>
               <button
                 id="btnStop"
-                class="control-btn wide-btn"
-                style="width: 100px"
+                class="control-btn"
+                style="width: 70px"
                 disabled
               >
                 <svg class="icon-svg" viewBox="0 0 24 24">
                   <path d="M6 6h12v12H6z" />
                 </svg>
-                <span>Stop</span>
               </button>
-              <div class="tempo-control">
-                <input
-                  type="range"
-                  id="tempoSlider"
-                  min="10"
-                  max="200"
-                  value="100"
-                />
-                <span id="tempoValue" title="Click to reset speed">100%</span>
+
+              <div class="settings-wrapper">
+                <button
+                  id="btnSettings"
+                  class="control-btn"
+                  style="width: 40px"
+                  title="Audio Settings"
+                >
+                  <svg class="icon-svg" viewBox="0 0 24 24">
+                    <path
+                      d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"
+                    />
+                  </svg>
+                </button>
+
+                <div id="settingsDropdown" class="settings-dropdown">
+                  <!-- Volume Control -->
+                  <div class="setting-row">
+                    <div class="setting-label">
+                      Volume <span id="volumeValue">80%</span>
+                    </div>
+                    <input
+                      type="range"
+                      id="volumeSlider"
+                      min="0"
+                      max="100"
+                      value="80"
+                    />
+                  </div>
+
+                  <div class="separator-horizontal"></div>
+
+                  <!-- Tempo Control -->
+                  <div class="setting-row">
+                    <div class="setting-label">
+                      Tempo
+                      <span id="tempoValue" title="Click to reset speed"
+                        >100%</span
+                      >
+                    </div>
+                    <input
+                      type="range"
+                      id="tempoSlider"
+                      min="10"
+                      max="200"
+                      value="100"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="right-controls">
-            <button id="btnBindings" class="control-btn wide-btn">
-              <svg class="icon-svg" viewBox="0 0 24 24">
-                <path
-                  d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
-                />
-              </svg>
-              <span>Special Bindings</span>
-            </button>
+            <!-- Dashboard Bindings Trigger -->
+            <div
+              id="dashboardBindings"
+              class="dashboard-bindings-group"
+              title="Configure Bindings"
+            >
+              <div class="bindings-icon">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path
+                    d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
+                  />
+                </svg>
+              </div>
+
+              <!-- Dynamic Keys Display -->
+              <div class="mini-key dynamic" data-key="[">
+                <span class="lbl-norm">[</span><span class="lbl-shift">{</span>
+              </div>
+              <div
+                class="mini-key dynamic"
+                data-key="]"
+                style="margin-right: 6px"
+              >
+                <span class="lbl-norm">]</span><span class="lbl-shift">}</span>
+              </div>
+              <div class="mini-key dynamic" data-key=";">
+                <span class="lbl-norm">;</span><span class="lbl-shift">:</span>
+              </div>
+              <div
+                class="mini-key dynamic"
+                data-key="'"
+                style="margin-right: 6px"
+              >
+                <span class="lbl-norm">'</span><span class="lbl-shift">"</span>
+              </div>
+              <div class="mini-key dynamic" data-key=",">
+                <span class="lbl-norm">,</span
+                ><span class="lbl-shift">&lt;</span>
+              </div>
+              <div class="mini-key dynamic" data-key=".">
+                <span class="lbl-norm">.</span
+                ><span class="lbl-shift">&gt;</span>
+              </div>
+              <div class="mini-key dynamic" data-key="/">
+                <span class="lbl-norm">/</span><span class="lbl-shift">?</span>
+              </div>
+            </div>
             <div class="separator"></div>
             <label class="toggle-container"
               ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
@@ -126,6 +195,18 @@
           </div>
           <div class="side-group">
             <div class="side-label">
+              Volume <span id="sideVolumeValue">80%</span>
+            </div>
+            <input
+              type="range"
+              id="sideVolumeSlider"
+              min="0"
+              max="100"
+              value="80"
+            />
+          </div>
+          <div class="side-group">
+            <div class="side-label">
               Tempo
               <span id="sideTempoValue" title="Click to reset speed">100%</span>
             </div>
@@ -148,7 +229,7 @@
             </label>
           </div>
           <div class="side-group clickable" id="sideBindingsTrigger">
-            <div class="side-label">Special Bindings</div>
+            <div class="side-label">Bindings</div>
             <div class="mini-rebinder">
               <!-- Row 1 -->
               <div class="mini-row">

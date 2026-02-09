@@ -2,11 +2,16 @@ export class AudioEngine {
   constructor() {
     this.ctx = null;
     this.samples = new Map();
+    this.masterVolume = 0.8;
   }
 
   init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || window.AudioContext)();
+  }
+
+  setVolume(val) {
+    this.masterVolume = Math.max(0, Math.min(1, val));
   }
 
   getFileName(midi) {
@@ -61,14 +66,15 @@ export class AudioEngine {
     const playTime = time || this.ctx.currentTime;
     const source = this.ctx.createBufferSource();
     const gainNode = this.ctx.createGain();
+    const vol = this.masterVolume;
 
     source.buffer = buffer;
 
     // ADSR Envelope
     gainNode.gain.setValueAtTime(0, playTime);
-    gainNode.gain.linearRampToValueAtTime(1, playTime + 0.005);
+    gainNode.gain.linearRampToValueAtTime(1 * vol, playTime + 0.005);
     // Simple release
-    gainNode.gain.setValueAtTime(1, playTime + buffer.duration - 0.1);
+    gainNode.gain.setValueAtTime(1 * vol, playTime + buffer.duration - 0.1);
     gainNode.gain.linearRampToValueAtTime(0, playTime + buffer.duration);
 
     source.connect(gainNode);
