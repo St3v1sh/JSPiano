@@ -92,6 +92,14 @@
           </div>
 
           <div class="right-controls">
+            <label class="toggle-container"
+              ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
+            >
+            <label class="toggle-container"
+              ><input type="checkbox" id="toggleHints" checked /> HINTS</label
+            >
+            <div class="separator"></div>
+
             <!-- Dashboard Bindings Trigger -->
             <div
               id="dashboardBindings"
@@ -139,13 +147,6 @@
                 <span class="lbl-norm">/</span><span class="lbl-shift">?</span>
               </div>
             </div>
-            <div class="separator"></div>
-            <label class="toggle-container"
-              ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
-            >
-            <label class="toggle-container"
-              ><input type="checkbox" id="toggleHints" checked /> HINTS</label
-            >
             <div class="separator"></div>
             <select id="scaleSelect"></select>
           </div>
@@ -221,62 +222,61 @@
           <div class="side-group">
             <div class="side-label">Settings</div>
             <select id="sideScaleSelect" class="side-select"></select>
-            <label class="toggle-container mini">
-              <input type="checkbox" id="sideToggleNotes" checked /> Notes
-            </label>
+            <div class="side-group clickable" id="sideBindingsTrigger">
+              <div class="mini-rebinder">
+                <!-- Row 1 -->
+                <div class="mini-row">
+                  <div class="mini-key static">I</div>
+                  <div class="mini-key static">O</div>
+                  <div class="mini-key static">P</div>
+                  <div class="mini-key dynamic" data-key="[">
+                    <span class="lbl-norm">[</span>
+                    <span class="lbl-shift">{</span>
+                  </div>
+                  <div class="mini-key dynamic" data-key="]">
+                    <span class="lbl-norm">]</span>
+                    <span class="lbl-shift">}</span>
+                  </div>
+                  <div class="mini-key static" style="flex: 0.8">\</div>
+                </div>
+                <!-- Row 2 -->
+                <div class="mini-row">
+                  <div class="mini-key static">K</div>
+                  <div class="mini-key static">L</div>
+                  <div class="mini-key dynamic" data-key=";">
+                    <span class="lbl-norm">;</span>
+                    <span class="lbl-shift">:</span>
+                  </div>
+                  <div class="mini-key dynamic" data-key="'">
+                    <span class="lbl-norm">'</span>
+                    <span class="lbl-shift">"</span>
+                  </div>
+                  <div class="mini-key static wide">Ent</div>
+                </div>
+                <!-- Row 3 -->
+                <div class="mini-row">
+                  <div class="mini-key dynamic" data-key=",">
+                    <span class="lbl-norm">,</span>
+                    <span class="lbl-shift">&lt;</span>
+                  </div>
+                  <div class="mini-key dynamic" data-key=".">
+                    <span class="lbl-norm">.</span>
+                    <span class="lbl-shift">&gt;</span>
+                  </div>
+                  <div class="mini-key dynamic" data-key="/">
+                    <span class="lbl-norm">/</span>
+                    <span class="lbl-shift">?</span>
+                  </div>
+                  <div class="mini-key static wider">Shft</div>
+                </div>
+              </div>
+            </div>
             <label class="toggle-container mini">
               <input type="checkbox" id="sideToggleHints" checked /> Hints
             </label>
-          </div>
-          <div class="side-group clickable" id="sideBindingsTrigger">
-            <div class="side-label">Bindings</div>
-            <div class="mini-rebinder">
-              <!-- Row 1 -->
-              <div class="mini-row">
-                <div class="mini-key static">I</div>
-                <div class="mini-key static">O</div>
-                <div class="mini-key static">P</div>
-                <div class="mini-key dynamic" data-key="[">
-                  <span class="lbl-norm">[</span>
-                  <span class="lbl-shift">{</span>
-                </div>
-                <div class="mini-key dynamic" data-key="]">
-                  <span class="lbl-norm">]</span>
-                  <span class="lbl-shift">}</span>
-                </div>
-                <div class="mini-key static" style="flex: 0.8">\</div>
-              </div>
-              <!-- Row 2 -->
-              <div class="mini-row">
-                <div class="mini-key static">K</div>
-                <div class="mini-key static">L</div>
-                <div class="mini-key dynamic" data-key=";">
-                  <span class="lbl-norm">;</span>
-                  <span class="lbl-shift">:</span>
-                </div>
-                <div class="mini-key dynamic" data-key="'">
-                  <span class="lbl-norm">'</span>
-                  <span class="lbl-shift">"</span>
-                </div>
-                <div class="mini-key static wide">Ent</div>
-              </div>
-              <!-- Row 3 -->
-              <div class="mini-row">
-                <div class="mini-key dynamic" data-key=",">
-                  <span class="lbl-norm">,</span>
-                  <span class="lbl-shift">&lt;</span>
-                </div>
-                <div class="mini-key dynamic" data-key=".">
-                  <span class="lbl-norm">.</span>
-                  <span class="lbl-shift">&gt;</span>
-                </div>
-                <div class="mini-key dynamic" data-key="/">
-                  <span class="lbl-norm">/</span>
-                  <span class="lbl-shift">?</span>
-                </div>
-                <div class="mini-key static wider">Shft</div>
-              </div>
-            </div>
+            <label class="toggle-container mini">
+              <input type="checkbox" id="sideToggleNotes" checked /> Notes
+            </label>
           </div>
         </div>
       </div>
