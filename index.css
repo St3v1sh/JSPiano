@@ -39,7 +39,7 @@
   --border-input: #555555;
 
   /* --- Effects --- */
-  --shadow-key: rgba(0, 0, 0, 0.2);
+  --shadow-key: rgba(0, 0, 0, 0.4);
   --shadow-depth: rgba(0, 0, 0, 0.5);
   --shadow-floating: 0 10px 40px rgba(0, 0, 0, 0.6);
   --pattern-wood: linear-gradient(
