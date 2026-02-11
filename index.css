@@ -255,9 +255,9 @@ input[type="range"] {
   left: 0;
   background: var(--bg-panel);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 15px;
-  width: 180px;
+  width: 300px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   z-index: 4000;
 
