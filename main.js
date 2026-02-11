@@ -148,6 +148,10 @@ const tempoLabels = [
   document.getElementById("tempoValue"),
   document.getElementById("sideTempoValue"),
 ];
+const scrollToggles = [
+  document.getElementById("toggleScroll"),
+  document.getElementById("sideToggleScroll"),
+];
 const noteToggles = [
   document.getElementById("toggleNotes"),
   document.getElementById("sideToggleNotes"),
@@ -526,18 +530,23 @@ tempoLabels.forEach((label) => {
 // --- Toggle Sync Logic ---
 const handleToggles = (e) => {
   const newState = e.target.checked;
-  const isNoteToggle = e.target.id.toLowerCase().includes("note");
+  const targetId = e.target.id.toLowerCase();
 
-  if (isNoteToggle) {
+  if (targetId.includes("scroll")) {
+    scrollToggles.forEach((t) => (t.checked = newState));
+    sheetUI.toggleAutoScroll(newState);
+  } else if (targetId.includes("note")) {
     noteToggles.forEach((t) => (t.checked = newState));
+    pianoUI.toggleLabels(newState, hintToggles[0].checked);
   } else {
     hintToggles.forEach((t) => (t.checked = newState));
+    pianoUI.toggleLabels(noteToggles[0].checked, newState);
   }
-
-  pianoUI.toggleLabels(noteToggles[0].checked, hintToggles[0].checked);
 };
 
-[...noteToggles, ...hintToggles].forEach((t) => (t.onchange = handleToggles));
+[...scrollToggles, ...noteToggles, ...hintToggles].forEach(
+  (t) => (t.onchange = handleToggles),
+);
 
 // --- Editor Mode Logic ---
 const appContainer = document.getElementById("appContainer");

@@ -11,6 +11,7 @@ export class SheetDisplay {
     };
 
     this.seekCallback = seekCallback;
+    this.autoScrollEnabled = false;
 
     // State
     this.sheetPagesHTML = [];
@@ -101,8 +102,12 @@ export class SheetDisplay {
     }
   }
 
+  toggleAutoScroll(enabled) {
+    this.autoScrollEnabled = enabled;
+  }
+
   highlightLine(globalIndex) {
-    // 1. Ensure visible
+    // 1. Ensure visible (Pagination)
     if (globalIndex < this.lineToPageMap.length) {
       const targetPage = this.lineToPageMap[globalIndex];
       const requiredStart = Math.floor(targetPage / 2) * 2;
@@ -117,7 +122,38 @@ export class SheetDisplay {
     old.forEach((el) => el.classList.remove("active-line"));
 
     const el = document.getElementById(`line-${globalIndex}`);
-    if (el) el.classList.add("active-line");
+    if (el) {
+      el.classList.add("active-line");
+      this.keepLineInView(el);
+    }
+  }
+
+  /**
+   * Automatically scrolls the window if the highlighted line is
+   * drifting out of the comfortable viewing area.
+   */
+  keepLineInView(el) {
+    if (!this.autoScrollEnabled) return;
+
+    const rect = el.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    // Approximate height of the sticky header (piano + dashboard)
+    const stickyHeaderHeight = 149;
+
+    // Define "Trigger Zones"
+    // If the note is above the header + buffer
+    const tooHigh = rect.top < stickyHeaderHeight + 40;
+    // If the note is in the bottom 35% of the screen
+    const tooLow = rect.top > viewportHeight * 0.65;
+
+    if (tooHigh || tooLow) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest",
+      });
+    }
   }
 
   clearHighlight() {
