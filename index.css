@@ -8,10 +8,16 @@
   /* --- Palette: Background Surfaces --- */
   --bg-app: #121212; /* Main body */
   --bg-panel: #1e1e1e; /* Dashboard, Side panels */
+  --bg-panel-editor: #2d1b38; /* Purple tint for Editor Mode */
   --bg-surface-1: #1a1a1a; /* Darker elements, key sides */
   --bg-surface-2: #2a2a2a; /* Inputs, Buttons */
   --bg-surface-3: #252525; /* Secondary containers */
   --bg-surface-hover: #333333;
+
+  /* --- Editor Specific Palette --- */
+  --bg-editor-input: #3e2a4d;
+  --bg-editor-input-hover: #4e3660;
+  --bg-editor-contrast: rgba(0, 0, 0, 0.4);
 
   /* --- Palette: Piano Specifics --- */
   --bg-piano-dark: #0a0a0a;
@@ -112,12 +118,32 @@ body {
 }
 
 .control-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.2;
   cursor: not-allowed;
   background: transparent;
 }
 
-select {
+.control-btn.primary-action {
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+}
+.control-btn.primary-action:hover {
+  filter: brightness(1.1);
+}
+
+.control-btn.danger-action {
+  background: var(--piano-felt-red);
+  color: #fff;
+  border: none;
+}
+.control-btn.danger-action:hover {
+  filter: brightness(1.2);
+}
+
+select,
+input[type="text"],
+input[type="number"] {
   background: var(--bg-surface-2);
   color: var(--text-main);
   border: 1px solid var(--border-subtle);
@@ -125,8 +151,21 @@ select {
   border-radius: 4px;
   font-size: 13px;
   outline: none;
-  cursor: pointer;
   transition: border-color 0.2s;
+}
+
+select {
+  cursor: pointer;
+}
+
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: var(--accent-primary);
 }
 
 input[type="range"] {
@@ -453,7 +492,7 @@ input[type="range"] {
 }
 
 /* =========================================
-   Component: Sheet Music Display
+   Component: Sheet Music Display (Book)
    ========================================= */
 .app-container {
   max-width: 1000px;
@@ -469,6 +508,13 @@ input[type="range"] {
   padding: 30px;
   border: 1px solid var(--border-subtle);
   min-height: 500px;
+  transition: background-color 0.3s ease;
+}
+
+/* --- Editor Mode Variant --- */
+.app-container.editor-mode .sheet-display {
+  background: var(--bg-panel-editor);
+  border-color: var(--accent-primary);
 }
 
 .sheet-header {
@@ -480,9 +526,17 @@ input[type="range"] {
   padding-bottom: 15px;
 }
 
-.sheet-header h2 {
-  margin: 0 0 5px 0;
+.sheet-info h2 {
+  margin: 0;
   color: var(--accent-secondary);
+}
+
+/* Container for Title and Edit Button to prevent overlap/deletion */
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 5px;
 }
 
 .sheet-meta {
@@ -496,10 +550,44 @@ input[type="range"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--bg-surface-3);
-  padding: 5px 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid var(--border-subtle);
+}
+
+/* Editor Pagination Colors */
+.app-container.editor-mode .sheet-controls {
+  border-color: var(--accent-primary);
+}
+
+/* Tint all general buttons inside the editor */
+.app-container.editor-mode .sheet-display .control-btn,
+.app-container.editor-mode .sheet-controls .control-btn {
+  background: var(--bg-editor-input);
+  border-color: var(--border-subtle);
+}
+
+/* Hover state for those buttons */
+.app-container.editor-mode .control-btn:hover:not(:disabled),
+.app-container.editor-mode .sheet-controls .control-btn:hover:not(:disabled) {
+  background: var(--bg-editor-input-hover);
+  border-color: var(--accent-primary);
+}
+
+/* Preserve Primary/Danger colors if they have the specific class */
+.app-container.editor-mode .control-btn.primary-action {
+  background: var(--accent-primary);
+}
+.app-container.editor-mode .control-btn.primary-action:hover {
+  background: var(--accent-primary);
+  filter: brightness(1.1);
+}
+
+.app-container.editor-mode .control-btn.danger-action {
+  background: var(--piano-felt-red);
+}
+.app-container.editor-mode .control-btn.danger-action:hover {
+  background: var(--piano-felt-red);
+  filter: brightness(1.2);
 }
 
 .sheet-controls .icon-svg {
@@ -538,7 +626,7 @@ input[type="range"] {
   min-width: 0;
 }
 
-/* Sheet Line Styling */
+/* Sheet Line Styling (Read Mode) */
 .sheet-line {
   display: block;
   padding: 0 4px;
@@ -558,12 +646,67 @@ input[type="range"] {
   box-shadow: -4px 0 0 var(--accent-primary);
 }
 
-.footer {
-  margin-top: 50px;
-  text-align: center;
-  font-size: 12px;
+/* --- Editor Specific Styles --- */
+.editor-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.editor-inputs-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.editor-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+/* Tint editor top inputs */
+.editor-group input,
+.editor-group select {
+  background: var(--bg-editor-input);
+}
+.editor-group input:focus,
+.editor-group select:focus {
+  background: var(--bg-editor-input-hover);
+}
+
+.editor-label {
+  font-size: 11px;
+  font-weight: 700;
   color: var(--text-muted);
-  padding-bottom: 20px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.page-textarea {
+  width: 100%;
+  height: 500px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
+  color: var(--text-main);
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  padding: 10px;
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  color-scheme: dark;
+}
+
+.page-textarea:focus {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-primary);
 }
 
 /* =========================================
@@ -897,7 +1040,7 @@ input[type="range"] {
   gap: 2px;
 }
 
-.bind-input {
+input[type="text"].bind-input {
   width: 100%;
   background: var(--bg-app);
   border: 1px solid var(--border-subtle);
@@ -913,7 +1056,7 @@ input[type="range"] {
   box-shadow: inset 0 1px 3px var(--shadow-depth);
 }
 
-.bind-input:focus {
+input[type="text"].bind-input:focus {
   background: var(--bg-surface-hover);
   border-color: var(--text-dark);
 }
