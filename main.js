@@ -674,8 +674,8 @@ fileInput.onchange = async (e) => {
 
 // --- Scroll Visibility Logic ---
 const updateSidePanelVisibility = () => {
-  const isDashboardHidden = window.scrollY > 60;
-  const isWideEnough = window.innerWidth > 1420;
+  const isDashboardHidden = window.scrollY >= 1;
+  const isWideEnough = window.innerWidth >= 1510;
 
   if (isDashboardHidden && isWideEnough) {
     sidePanel.classList.add("visible");
