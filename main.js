@@ -2,17 +2,28 @@ import { musicLibrary } from "./data/musicLibrary.js";
 import { AudioEngine } from "./core/AudioEngine.js";
 import { MusicLogic } from "./core/MusicLogic.js";
 import { AutoPlayer } from "./core/AutoPlayer.js";
+import { StorageManager } from "./core/StorageManager.js";
 import { PianoKeyboard } from "./ui/PianoKeyboard.js";
 import { SheetDisplay } from "./ui/SheetDisplay.js";
+import { SongEditor } from "./ui/SongEditor.js";
+
+// --- Constants ---
+const CONSTANTS = {
+  DEFAULT_VOL: 80,
+  EDITOR_MODE_LABEL: "EDITOR_MODE",
+  ID_PREFIX: "usr_",
+  ICONS: {
+    PLAY: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
+    PAUSE: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
+  },
+};
 
 // --- Initialize Core ---
-const ICON_PLAY = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-const ICON_PAUSE = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-
 const audio = new AudioEngine();
-audio.setVolume(0.8);
+audio.setVolume(CONSTANTS.DEFAULT_VOL / 100);
 
 const logic = new MusicLogic();
+const storage = new StorageManager();
 
 // --- Initialize UI ---
 const pianoUI = new PianoKeyboard(
@@ -30,7 +41,7 @@ const pianoUI = new PianoKeyboard(
 );
 
 const sheetUI = new SheetDisplay((lineIndex) => {
-  // Callback when user clicks a line in the sheet
+  // Callback when user clicks a line in the sheet (Read Mode)
   player.seek(lineIndex);
 });
 
@@ -43,6 +54,61 @@ const player = new AutoPlayer(audio, logic, {
   onStop: () => {
     sheetUI.clearHighlight();
     updatePlayButtons(false);
+  },
+});
+
+// --- Helper for Bindings ---
+function getBindingsFromUI() {
+  const newBindings = {};
+  bindInputs.forEach((input) => {
+    const key = input.dataset.key;
+    const type = input.dataset.type; // 'norm' or 'shift'
+    const val = input.value;
+
+    if (!newBindings[key]) newBindings[key] = { norm: "", shift: "" };
+    newBindings[key][type] = val;
+  });
+  return newBindings;
+}
+
+// --- Initialize Editor ---
+const editorUI = new SongEditor(logic, {
+  onSave: async (songData) => {
+    // Save to DB
+    await storage.saveSong(songData);
+    // Refresh library in memory
+    await refreshSongLibrary();
+    // Select the saved song
+    updateSongSelects(songData.id);
+    player.load(songData);
+    sheetUI.load(songData);
+    syncBindingUI(songData.bindings);
+    exitEditorMode();
+  },
+  onCancel: () => {
+    exitEditorMode();
+  },
+  onDelete: async (id) => {
+    if (confirm("Are you sure you want to delete this song?")) {
+      await storage.deleteSong(id);
+      await refreshSongLibrary();
+      // Reset to first song
+      updateSongSelects(musicLibrary[0].id);
+      player.load(musicLibrary[0]);
+      sheetUI.load(musicLibrary[0]);
+      syncBindingUI(musicLibrary[0].bindings);
+      exitEditorMode();
+    }
+  },
+  onScaleChange: (newScale) => {
+    // Sync global dropdowns and piano when editor changes scale
+    scaleSelects.forEach((s) => (s.value = newScale));
+    logic.setScale(newScale);
+    pianoUI.updateLabels();
+  },
+  getBindings: () => {
+    // Allow editor to grab current bindings for saving
+    return getBindingsFromUI();
   },
 });
 
@@ -94,6 +160,26 @@ const btnSettings = document.getElementById("btnSettings");
 const settingsDropdown = document.getElementById("settingsDropdown");
 const sidePanel = document.getElementById("sidePanel");
 const sideBindingsTrigger = document.getElementById("sideBindingsTrigger");
+
+// Editor & Import Bindings
+const btnCreateSong = document.getElementById("btnCreateSong");
+const btnEditSong = document.getElementById("btnEditSong");
+const btnImportSong = document.getElementById("btnImportSong");
+const fileInput = document.getElementById("fileInput");
+
+// --- Global Pagination Buttons (Shared) ---
+const btnPrev = document.getElementById("btnPrev");
+const btnNext = document.getElementById("btnNext");
+
+// Centralized Pagination Logic
+btnPrev.onclick = () => {
+  if (editorUI.isActive) editorUI.changePage(-1);
+  else sheetUI.changePage(-1);
+};
+btnNext.onclick = () => {
+  if (editorUI.isActive) editorUI.changePage(1);
+  else sheetUI.changePage(1);
+};
 
 // --- Modal Logic ---
 const dashboardBindings = document.getElementById("dashboardBindings");
@@ -157,11 +243,10 @@ volumeSliders.forEach((slider) => {
 
 volumeLabels.forEach((label) => {
   label.onclick = () => {
-    // Reset to 80% on click
-    const resetVal = 80;
-    volumeSliders.forEach((s) => (s.value = resetVal));
-    volumeLabels.forEach((l) => (l.innerText = resetVal + "%"));
-    audio.setVolume(resetVal / 100);
+    // Reset to default on click
+    volumeSliders.forEach((s) => (s.value = CONSTANTS.DEFAULT_VOL));
+    volumeLabels.forEach((l) => (l.innerText = CONSTANTS.DEFAULT_VOL + "%"));
+    audio.setVolume(CONSTANTS.DEFAULT_VOL / 100);
   };
 });
 
@@ -180,16 +265,10 @@ const defaultSpecialBindKeyMap = {
 };
 
 function updateLogicBindings() {
-  const newBindings = {};
-  bindInputs.forEach((input) => {
-    const key = input.dataset.key;
-    const type = input.dataset.type; // 'norm' or 'shift'
-    const val = input.value;
-
-    if (!newBindings[key]) newBindings[key] = { norm: "", shift: "" };
-    newBindings[key][type] = val;
-  });
+  const newBindings = getBindingsFromUI();
   logic.setBindings(newBindings);
+  // Ensure visual sync happens during typing
+  updateSideBindingsDisplay(newBindings);
 }
 
 function updateSideBindingsDisplay(bindings) {
@@ -271,17 +350,43 @@ bindInputs.forEach((input, index) => {
   });
 
   input.addEventListener("focus", () => input.select());
-});
 
-// 1. Initial Song/Scale Population
-musicLibrary.forEach((song, index) => {
-  songSelects.forEach((sel) => {
-    const opt = document.createElement("option");
-    opt.value = index;
-    opt.innerText = song.title;
-    sel.appendChild(opt);
+  // Update sidebar visually on input change (e.g. backspace)
+  input.addEventListener("input", () => {
+    updateLogicBindings();
   });
 });
+
+// --- Song Library Management ---
+async function refreshSongLibrary() {
+  await storage.init();
+  const userSongs = await storage.getAllSongs();
+
+  // Reset library to base, then append user songs
+  // Dynamically calculate base length to avoid magic number "5"
+  const baseLength = musicLibrary.filter((s) => !s.isCustom).length;
+  musicLibrary.splice(baseLength);
+
+  musicLibrary.push(...userSongs);
+
+  // Re-populate selects
+  songSelects.forEach((sel) => {
+    // Preserve old value if possible, or reset
+    const oldVal = sel.value;
+    sel.innerHTML = '<option value="" disabled>Select Song...</option>';
+    musicLibrary.forEach((song, index) => {
+      const opt = document.createElement("option");
+      opt.value = song.id; // Use ID instead of index
+      opt.innerText = song.title + (song.isCustom ? " *" : "");
+      sel.appendChild(opt);
+    });
+    // Restore if valid
+    if (musicLibrary.find((s) => s.id === oldVal)) sel.value = oldVal;
+  });
+}
+
+// Initial Load
+await refreshSongLibrary();
 
 Object.keys(logic.scales).forEach((s) => {
   scaleSelects.forEach((sel) => {
@@ -292,35 +397,59 @@ Object.keys(logic.scales).forEach((s) => {
   });
 });
 
-// --- Load Initial Song State ---
-syncBindingUI({});
+// --- Consolidated Synchronized Song Selection ---
+const handleSongSelection = (id) => {
+  const song = musicLibrary.find((s) => s.id === id);
+  if (!song) return;
 
-// 2. Consolidated Synchronized Song Selection
+  // Load music into engines
+  player.load(song);
+  sheetUI.load(song);
+
+  // Load the bindings from the song object
+  syncBindingUI(song.bindings);
+
+  // Load scale if song defines one
+  if (logic.scales[song.scale]) {
+    scaleSelects.forEach((ss) => (ss.value = song.scale));
+    logic.setScale(song.scale);
+    pianoUI.updateLabels();
+  }
+
+  // Handle Edit Button Visibility
+  btnEditSong.style.display = song.isCustom ? "inline-flex" : "none";
+  if (song.isCustom) {
+    btnEditSong.onclick = () => enterEditorMode(song);
+  }
+};
+
 songSelects.forEach((sel) => {
   sel.onchange = (e) => {
-    const idx = e.target.value;
-    const song = musicLibrary[idx];
-
-    // Sync all song dropdowns (Main and Side Panel)
-    songSelects.forEach((s) => (s.value = idx));
-
-    // Load music into engines
-    player.load(song);
-    sheetUI.load(song);
-
-    // Load the bindings from the song object
-    syncBindingUI(song.bindings);
-
-    // Load scale if song defines one
-    if (logic.scales[song.scale]) {
-      scaleSelects.forEach((ss) => (ss.value = song.scale));
-      logic.setScale(song.scale);
-      pianoUI.updateLabels();
-    }
+    const id = e.target.value;
+    updateSongSelects(id);
+    handleSongSelection(id);
   };
 });
 
-// 3. Synchronized Scale Selection
+function updateSongSelects(id) {
+  songSelects.forEach((s) => (s.value = id));
+}
+
+// Initialize First Song if available
+let previousSongId = null;
+
+if (musicLibrary.length > 0) {
+  const initialSong = musicLibrary[0];
+  updateSongSelects(initialSong.id);
+  handleSongSelection(initialSong.id);
+  previousSongId = initialSong.id;
+  // Default binding sync
+  syncBindingUI(initialSong.bindings || {});
+} else {
+  syncBindingUI({});
+}
+
+// --- Synchronized Scale Selection ---
 scaleSelects.forEach((sel) => {
   sel.onchange = (e) => {
     const val = e.target.value;
@@ -330,22 +459,43 @@ scaleSelects.forEach((sel) => {
   };
 });
 
-// 4. Playback Controls Sync
+// --- Playback Controls Sync ---
 function updatePlayButtons(isPlaying) {
   playBtns.forEach((btn) => {
-    const icon = isPlaying ? ICON_PAUSE : ICON_PLAY;
+    const icon = isPlaying ? CONSTANTS.ICONS.PAUSE : CONSTANTS.ICONS.PLAY;
     btn.innerHTML = icon;
   });
 
   stopBtns.forEach((btn) => {
-    btn.disabled = !isPlaying && player.currentLineIdx === 0;
+    // If in editor, stop is always enabled if playing
+    if (editorUI.isActive) {
+      btn.disabled = !isPlaying;
+    } else {
+      btn.disabled = !isPlaying && player.currentLineIdx === 0;
+    }
   });
 }
 
 playBtns.forEach((btn) => {
   btn.onclick = () => {
-    const isPlaying = player.togglePlay();
-    updatePlayButtons(isPlaying);
+    if (editorUI.isActive) {
+      // Editor Play Logic
+      if (player.isPlaying) {
+        player.pause();
+        updatePlayButtons(false);
+      } else {
+        const tempSong = editorUI.getSongDataForPlayback();
+        const startLine = editorUI.getCursorLineIndex();
+        player.load(tempSong);
+        player.seek(startLine);
+        player.play();
+        updatePlayButtons(true);
+      }
+    } else {
+      // Normal Play Logic
+      const isPlaying = player.togglePlay();
+      updatePlayButtons(isPlaying);
+    }
   };
 });
 
@@ -373,7 +523,7 @@ tempoLabels.forEach((label) => {
   };
 });
 
-// 5. Toggle Sync Logic
+// --- Toggle Sync Logic ---
 const handleToggles = (e) => {
   const newState = e.target.checked;
   const isNoteToggle = e.target.id.toLowerCase().includes("note");
@@ -389,7 +539,131 @@ const handleToggles = (e) => {
 
 [...noteToggles, ...hintToggles].forEach((t) => (t.onchange = handleToggles));
 
-// 6. Scroll Visibility Logic
+// --- Editor Mode Logic ---
+const appContainer = document.getElementById("appContainer");
+const sheetReadContent = document.getElementById("sheetReadContent");
+const sheetEditorContent = document.getElementById("sheetEditorContent");
+const sheetTitle = document.getElementById("sheetTitle");
+const sheetMeta = document.getElementById("sheetMeta");
+
+function enterEditorMode(songData) {
+  if (editorUI.isActive && !songData) return;
+  if (editorUI.isActive && songData && songData.id === editorUI.currentSongId)
+    return;
+
+  player.stop();
+  updatePlayButtons(false);
+
+  editorUI.isActive = true;
+  appContainer.classList.add("editor-mode");
+  sheetReadContent.style.display = "none";
+  sheetEditorContent.style.display = "flex";
+
+  // Hide edit button while in editor
+  btnEditSong.style.display = "none";
+
+  sheetTitle.innerHTML = "EDITOR MODE";
+  sheetMeta.innerText = "You are editing a song";
+
+  songSelects.forEach((s) => {
+    s.disabled = true;
+    let dummy = s.querySelector(
+      `option[value="${CONSTANTS.EDITOR_MODE_LABEL}"]`,
+    );
+    if (!dummy) {
+      dummy = document.createElement("option");
+      dummy.value = CONSTANTS.EDITOR_MODE_LABEL;
+      dummy.innerText = "EDITOR MODE";
+      s.appendChild(dummy);
+    }
+    s.value = CONSTANTS.EDITOR_MODE_LABEL;
+  });
+
+  // Reset bindings for new song, or load existing bindings
+  if (songData) {
+    syncBindingUI(songData.bindings || {});
+  } else {
+    syncBindingUI({});
+  }
+
+  editorUI.load(songData || null);
+}
+
+function exitEditorMode() {
+  player.stop();
+  updatePlayButtons(false);
+
+  editorUI.isActive = false;
+  appContainer.classList.remove("editor-mode");
+  sheetReadContent.style.display = "flex";
+  sheetEditorContent.style.display = "none";
+
+  songSelects.forEach((s) => {
+    s.disabled = false;
+    let dummy = s.querySelector(
+      `option[value="${CONSTANTS.EDITOR_MODE_LABEL}"]`,
+    );
+    if (dummy) dummy.remove();
+  });
+
+  if (
+    songSelects[0].value !== CONSTANTS.EDITOR_MODE_LABEL &&
+    songSelects[0].value
+  ) {
+    updateSongSelects(songSelects[0].value);
+    handleSongSelection(songSelects[0].value);
+  } else {
+    updateSongSelects(previousSongId);
+    handleSongSelection(previousSongId);
+  }
+}
+
+btnCreateSong.onclick = () => {
+  enterEditorMode();
+};
+
+// --- Import Logic ---
+btnImportSong.onclick = () => {
+  fileInput.click();
+};
+
+fileInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const songObj = JSON.parse(text);
+
+    if (!songObj.title || !Array.isArray(songObj.sheet)) {
+      alert("Invalid song file format.");
+      return;
+    }
+
+    songObj.isCustom = true;
+    // Ensure unique ID with valid prefix
+    songObj.id =
+      CONSTANTS.ID_PREFIX +
+      (songObj.id || Date.now().toString(36)).replace(
+        new RegExp("^" + CONSTANTS.ID_PREFIX),
+        "",
+      );
+
+    await storage.saveSong(songObj);
+    await refreshSongLibrary();
+
+    updateSongSelects(songObj.id);
+    handleSongSelection(songObj.id);
+    previousSongId = songObj.id;
+  } catch (err) {
+    console.error(err);
+    alert("Failed to import song. Check console for details.");
+  } finally {
+    fileInput.value = "";
+  }
+};
+
+// --- Scroll Visibility Logic ---
 const updateSidePanelVisibility = () => {
   const isDashboardHidden = window.scrollY > 60;
   const isWideEnough = window.innerWidth > 1420;
@@ -404,20 +678,23 @@ const updateSidePanelVisibility = () => {
 window.addEventListener("scroll", updateSidePanelVisibility);
 window.addEventListener("resize", updateSidePanelVisibility);
 
-// 7. Keyboard Interactions
+// --- Keyboard Interactions ---
 window.addEventListener("keydown", (e) => {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
 
-  // Check if we are typing in the modal inputs
-  if (e.target.classList.contains("bind-input")) return;
+  const tag = e.target.tagName;
+  const isInput =
+    tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable;
+  if (isInput) return;
 
-  // Pagination shortcuts
   if (e.key === "-" || e.key === "_") {
-    sheetUI.changePage(-1);
+    if (editorUI.isActive) editorUI.changePage(-1);
+    else sheetUI.changePage(-1);
     return;
   }
   if (e.key === "=" || e.key === "+") {
-    sheetUI.changePage(1);
+    if (editorUI.isActive) editorUI.changePage(1);
+    else sheetUI.changePage(1);
     return;
   }
 
@@ -429,11 +706,13 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// 8. Focus Management
+// --- Focus Management ---
 const interactive = document.querySelectorAll(
   "button, select, input, [type='checkbox'], [type='range']",
 );
 interactive.forEach((el) => {
+  if (el.type === "text" || el.type === "number") return;
+
   el.setAttribute("tabindex", "-1");
   if (el.tagName === "BUTTON" || el.type === "checkbox") {
     el.addEventListener("mousedown", (e) => e.preventDefault());

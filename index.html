@@ -18,6 +18,30 @@
             <select id="songSelect" class="song-picker">
               <option value="" disabled selected>Select Song...</option>
             </select>
+            <button
+              id="btnCreateSong"
+              class="control-btn"
+              title="Create New Song"
+            >
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+            </button>
+            <button
+              id="btnImportSong"
+              class="control-btn"
+              title="Import Song (JSON)"
+            >
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+              </svg>
+            </button>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".json"
+              style="display: none"
+            />
 
             <div class="separator"></div>
 
@@ -109,7 +133,7 @@
               <div class="bindings-icon">
                 <svg class="icon-svg" viewBox="0 0 24 24">
                   <path
-                    d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
+                    d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
                   />
                 </svg>
               </div>
@@ -140,8 +164,8 @@
                 ><span class="lbl-shift">&lt;</span>
               </div>
               <div class="mini-key dynamic" data-key=".">
-                <span class="lbl-norm">.</span
-                ><span class="lbl-shift">&gt;</span>
+                <span class="lbl-norm">.</span>
+                <span class="lbl-shift">&gt;</span>
               </div>
               <div class="mini-key dynamic" data-key="/">
                 <span class="lbl-norm">/</span><span class="lbl-shift">?</span>
@@ -169,7 +193,7 @@
     </div>
 
     <!-- Main Content / Sheet Music -->
-    <div class="app-container">
+    <div class="app-container" id="appContainer">
       <div class="side-panel-track">
         <!-- Floating Side Panel -->
         <div id="sidePanel" class="side-panel">
@@ -284,19 +308,44 @@
       <div class="sheet-display" id="sheetDisplay">
         <div class="sheet-header">
           <div class="sheet-info">
-            <h2 id="sheetTitle">Select a song to begin</h2>
+            <div class="title-row">
+              <h2 id="sheetTitle">Select a song to begin</h2>
+              <!-- Edit Button -->
+              <button
+                id="btnEditSong"
+                class="control-btn"
+                style="display: none"
+                title="Edit Song"
+              >
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                  />
+                </svg>
+              </button>
+            </div>
             <div class="sheet-meta" id="sheetMeta"></div>
           </div>
 
           <!-- Pagination Controls -->
           <div class="sheet-controls">
-            <button id="btnPrev" class="control-btn" title="Previous Pages (-)">
+            <button
+              id="btnPrev"
+              class="control-btn"
+              title="Previous Pages (-)"
+              style="border: none"
+            >
               <svg class="icon-svg" viewBox="0 0 24 24">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
               </svg>
             </button>
             <span id="pageIndicator">Pg 1-2</span>
-            <button id="btnNext" class="control-btn" title="Next Pages (=)">
+            <button
+              id="btnNext"
+              class="control-btn"
+              title="Next Pages (=)"
+              style="border: none"
+            >
               <svg class="icon-svg" viewBox="0 0 24 24">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
               </svg>
@@ -304,17 +353,105 @@
           </div>
         </div>
 
-        <div class="sheet-content">
+        <div class="sheet-content" id="sheetReadContent">
           <div id="sheetLeft" class="sheet-page-container">
             No sheet selected.
           </div>
           <div class="sheet-divider"></div>
           <div id="sheetRight" class="sheet-page-container"></div>
         </div>
+
+        <!-- Editor Content (Hidden by Default) -->
+        <div
+          class="sheet-content"
+          id="sheetEditorContent"
+          style="display: none; flex-direction: column"
+        >
+          <div class="editor-inputs-row">
+            <div class="editor-group">
+              <div class="editor-label">Title</div>
+              <input type="text" id="editTitle" placeholder="Song Title" />
+            </div>
+            <div class="editor-group">
+              <div class="editor-label">Artist</div>
+              <input type="text" id="editArtist" placeholder="Artist" />
+            </div>
+            <div class="editor-group" style="flex: 0.3">
+              <div class="editor-label">BPM</div>
+              <input type="number" id="editBpm" value="200" min="1" max="999" />
+            </div>
+            <div class="editor-group" style="flex: 0.5">
+              <div class="editor-label">Scale</div>
+              <select id="editScale"></select>
+            </div>
+          </div>
+
+          <div class="editor-toolbar">
+            <button
+              id="btnEditorSave"
+              class="control-btn primary-action wide-btn"
+            >
+              Save
+            </button>
+            <button id="btnEditorCancel" class="control-btn wide-btn">
+              Exit
+            </button>
+            <div class="separator"></div>
+            <button
+              id="btnEditorExport"
+              class="control-btn"
+              title="Export JSON"
+            >
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+              </svg>
+            </button>
+            <button
+              id="btnEditorDelete"
+              class="control-btn danger-action"
+              title="Delete Song"
+            >
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                />
+              </svg>
+            </button>
+            <div class="separator"></div>
+            <label class="toggle-container" style="color: var(--text-main)">
+              <input type="checkbox" id="toggleEditorNotation" /> Musical
+              Notation
+            </label>
+          </div>
+
+          <div class="sheet-content">
+            <div class="sheet-page-container">
+              <div class="editor-label">
+                Page <span id="lblPageLeft">1</span>
+              </div>
+              <textarea
+                id="txtPageLeft"
+                class="page-textarea"
+                spellcheck="false"
+              ></textarea>
+            </div>
+            <div class="sheet-divider"></div>
+            <div class="sheet-page-container">
+              <div class="editor-label">
+                Page <span id="lblPageRight">2</span>
+              </div>
+              <textarea
+                id="txtPageRight"
+                class="page-textarea"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Special Bindings Modal -->
+    <!-- Special Bindings Modal (omitted for brevity, assume same structure) -->
     <div id="bindingsModal" class="modal-overlay">
       <div class="modal-window">
         <div class="modal-header">
