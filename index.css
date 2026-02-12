@@ -438,7 +438,7 @@ input[type="range"] {
   border-bottom: 4px solid var(--border-subtle);
   border-radius: 0 0 6px 6px;
   z-index: var(--z-piano-keys);
-  box-shadow: inset 0 0 10px var(--shadow-key);
+  box-shadow: inset 0 0 4px var(--shadow-key);
 }
 
 .black-key {
@@ -518,6 +518,7 @@ input[type="range"] {
 
 .sheet-header {
   display: flex;
+  gap: 15px;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
@@ -533,7 +534,6 @@ input[type="range"] {
 /* Container for Title and Edit Button to prevent overlap/deletion */
 .title-row {
   display: flex;
-  align-items: center;
   gap: 15px;
   margin-bottom: 5px;
 }
