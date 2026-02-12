@@ -465,6 +465,9 @@ input[type="range"] {
   background: var(--piano-black-key-active);
   height: calc(60% + 2px);
   border-bottom: 1px solid var(--border-subtle);
+  box-shadow:
+    4px 0px 4px var(--shadow-key),
+    -4px 0px 4px var(--shadow-key);
 }
 
 /* --- Note Labels --- */
