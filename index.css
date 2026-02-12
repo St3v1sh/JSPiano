@@ -448,7 +448,10 @@ input[type="range"] {
   z-index: var(--z-piano-sharps);
   border: 1px solid var(--border-strong);
   border-bottom: 3px solid var(--border-subtle);
-  box-shadow: 2px 2px 5px var(--shadow-depth);
+  box-shadow:
+    4px 0px 4px var(--shadow-key),
+    -4px 0px 4px var(--shadow-key),
+    0px 2px 4px var(--shadow-key);
 }
 
 .white-key.active {
