@@ -45,9 +45,7 @@ export const musicLibrary = [
       [%d] 7 [9s] [Wd] e g ..
       [60eus] ..... a p
       [3a] 5 7 0 w 0 7 5
-
       ~
-
       -20---
       3 5 7 0 w 0 6 .
       [%H] [7g] [9f] [qd] [ef] [qd] [9f] [7g]
@@ -60,8 +58,7 @@ export const musicLibrary = [
       `
       .trim()
       .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean),
+      .map((line) => line.trim()),
   },
   {
     id: "pallet_town",
@@ -93,9 +90,7 @@ export const musicLibrary = [
       [2ya].6.9. s a [2p].6.9.q.
 
       e. y. i. p.
-
       ~
-
       -17---
       [oz]. [al]. [dk]. [aj]. [uv]. [ax]. [ic]. [ax].
       [oz].a.d. [ak]. [ih]. [ah]. [uj]. [ak].
@@ -121,8 +116,7 @@ export const musicLibrary = [
       `
       .trim()
       .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean),
+      .map((line) => line.trim()),
   },
   {
     id: "living_mice",
@@ -157,9 +151,7 @@ export const musicLibrary = [
       [6wps]. eau. [tu]. o.. p.. 8.
       [6woa]. epu. [td]. ...... t.
       [6wps]. efu. [tp]... fpd. [f0].
-
       ~
-
       -20---
       [6wpd]. [ef]. u. [tps]. ........
       [4wys]. [eu]. [ua]. [to]... [af]. d.8.
@@ -189,8 +181,7 @@ export const musicLibrary = [
       `
       .trim()
       .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean),
+      .map((line) => line.trim()),
   },
   {
     id: "marble_machine",
@@ -225,9 +216,7 @@ export const musicLibrary = [
       [8o].p. [wr].a. ..o. [wrp].d.
       [29]... [qr].a. .... [qr].p.
       [9o].p. [qr].i. ..o. [qrp].d.
-
       ~
-
       -21---
       [30]... [wr].a. .... [wr].d.
       [0s].a. [wr].p. ..o. [wrp].u.
@@ -253,9 +242,7 @@ export const musicLibrary = [
       [ed].[ry]. [ei].[qd]. [9y].[qa]. [ry].[qo].
       [8u].[wi]. [ro].[tu]. [ri].[wo]. [0u].p.
       9.y. u.i. [qr].o. p.f.
-
       ~
-
       -41---
       [0u].[wa]. [rf].[tu]. [ra].[wf]. [0u].[wa].
       [rf].[tu]. [ra].[wf]. [0u].[wf]. [ru].[wd].
@@ -281,9 +268,7 @@ export const musicLibrary = [
       [rf].[tu]. [ra].[wf]. [8u].[wf]. [ru].[wg].
       [9i].[wa]. [eg].[ri]. [ea].[wg]. [9i].[wa].
       [eg].[ri]. [ea].[wg]. [9i].[wg]. [ri].[wg].
-
       ~
-
       -61---,
       [0i].[wa]. [rg].[ti]. [ra].[wg]. [0i].[wa].
       [rg].[ti]. [ra].[wg]. [0i].[wg]. [ri].[wf].
@@ -312,8 +297,97 @@ export const musicLibrary = [
       `
       .trim()
       .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean),
+      .map((line) => line.trim()),
+  },
+  {
+    id: "never_gonna_give_you_up",
+    title: "Never Gonna Give You Up",
+    artist: "Mike Stock / Matt Aitken / Peter Waterman",
+    bpm: 456,
+    scale: "F Major",
+    bindings: {},
+    sheet: `
+      -1
+      [7adg]. r... [8sfh]... t. s. t.
+      [6sfh]. e... [7dgj]... y. l k [yj].
+      [7adg]. r... [8sfh]... t. s. t.
+      7. r... 8... [ts] s d f t g
+
+      [7adg]. r... [8sfh]... t. s. t.
+      [6sfh]. e... [7dgj]... y. l k [yj].
+      [7adg]. r... [8sfh]... t. s. t.
+      [6sf]. [eg]. [pdg]. 7... t. g g t g
+      -6
+      7. q. [rad]. f. g. g. h. [8tsf].
+      . d s... [8t]. [8t]... [&R]...
+      7. [qad]. [rd]. f. g. d. [7r]. s.
+      [8tsl]... l. h... .... ..
+      -11
+      7. [qad]. [rd]. f. g. d. [7rag]. h.
+      [8t]. [sf]. d. [8ts]. .... [&R]...
+      7. [qad]. [rd]. f. [5wag]. d. s...
+      -14
+      [8tsfh]. h. h. j. h... [&R]...
+      [7adg]. r. 7. r. 7. [rh]. [7j]. [rg].
+      [8sfh]. [th]. [8h]. [tj]. [8h]. t. [8s]. t.
+      ~
+      -17
+      7. r. 7. r. [7ad]. [rf]. [7g]. [rd].
+      [8t]. [sfh]. j. h. .... s d g d
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+      [6esfh]. . [6esfh]. . [9ypdg]. . f d. s d g d
+      -21
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      [eupsh]... [9ypdg]... .... s d g d
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+      -24
+      [6esl]... [6ef]. [9yg]. . f d. s d g d
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      [eupsh]... [9ypdg]... .... ....
+
+      7. q. [rad]. f. g. g. h. [8tsf].
+      . d s... [8t]. [8t]... [&R]...
+      7. [qad]. [rd]. f. g. d. [7r]. s.
+      [8tsl]... l. h. [sf]. j. h. g.
+
+      7. [qad]. [rd]. f. g. d. [7rag]. h.
+      [8t]. [sf]. d. [8ts]. .... [&R]...
+      7. [qad]. [rd]. f. [5wag]. d. s...
+      ~
+      [8tsfh]. h. h. j. h... [&R]...
+      [7adg]. r. 7. r. 7. [rh]. [7j]. [rg].
+      [8sfh]. [th]. [8h]. [tj]. [8h]. t. [8s]. t.
+
+      7. r. 7. r. [7ad]. [rf]. [7g]. [rd].
+      [8t]. [sfh]. j. h. .... s d g d
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+      [6esfh]. . [6esfh]. . [9ypdg]. . f d. s d g d
+
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      [eupsh]... [9ypdg]... .... s d g d
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+
+      [6esl]... [6ef]. [9yg]. . f d. s d g d
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      [eupsh]... [9ypdg]... .... s d g d
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+      -29
+      [6esfh]. . [6esfh]. . [9ypdg]. . f d. s d g d
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      [eupsh]... [9ypdg]... .... s d g d
+
+      -
+      ~
+      -32
+      [7rdgj]. . [7rdgj]. . [8tsfh]. .... s d g d
+      [6esl]... [6ef]. [9yg]. . f d. s d g d
+      [5wadg]... h. [8tsf]. . d s. t. s.
+      -35
+      [eupsh]... [9ypdg]... .... ....
+      `
+      .trim()
+      .split("\n")
+      .map((line) => line.trim()),
   },
   {
     id: "test",
@@ -338,7 +412,6 @@ export const musicLibrary = [
       `
       .trim()
       .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean),
+      .map((line) => line.trim()),
   },
 ];
