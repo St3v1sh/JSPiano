@@ -219,8 +219,9 @@ input[type="range"] {
 }
 
 .song-picker {
-  min-width: 200px;
+  width: 200px;
   font-weight: 600;
+  text-overflow: ellipsis;
 }
 
 .toggle-container {
@@ -533,15 +534,21 @@ input[type="range"] {
   padding-bottom: 15px;
 }
 
+.sheet-info {
+  width: 100%;
+}
+
 .sheet-info h2 {
   margin: 0;
   color: var(--accent-secondary);
+  overflow-wrap: anywhere;
 }
 
 /* Container for Title and Edit Button to prevent overlap/deletion */
 .title-row {
   display: flex;
   gap: 15px;
+  justify-content: space-between;
   margin-bottom: 5px;
 }
 

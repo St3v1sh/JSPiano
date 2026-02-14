@@ -7,6 +7,14 @@ const EDITOR_DEFAULTS = {
   UNKNOWN_ARTIST: "Unknown",
 };
 
+export const LIMITS = {
+  TITLE_MAX: 256,
+  ARTIST_MAX: 256,
+  BPM_MIN: 1,
+  BPM_MAX: 50000,
+  SHEET_MAX_CHARS: 150000,
+};
+
 export class SongEditor {
   constructor(logicEngine, callbacks) {
     this.logic = logicEngine;
@@ -48,6 +56,11 @@ export class SongEditor {
     this.rawPages = [""]; // Array of strings, split by '~'
     this.pageIndex = 0; // Current spread start index (0, 2, 4...)
     this.isNotationMode = false;
+
+    this.dom.inputs.title.maxLength = LIMITS.TITLE_MAX;
+    this.dom.inputs.artist.maxLength = LIMITS.ARTIST_MAX;
+    this.dom.inputs.bpm.min = LIMITS.BPM_MIN;
+    this.dom.inputs.bpm.max = LIMITS.BPM_MAX;
 
     this.bindEvents();
     this.populateScales();
@@ -194,6 +207,38 @@ export class SongEditor {
     }
   }
 
+  /**
+   * Sync visible pages with the AutoPlayer's line index.
+   * Maps a global sheet line index (which includes '~' separators) to
+   * the specific page index and updates the UI if necessary.
+   */
+  syncPageWithLineIndex(globalLineIndex) {
+    let currentLineCount = 0;
+    let targetPageIndex = 0;
+
+    // Calculate which page holds the global line
+    for (let i = 0; i < this.rawPages.length; i++) {
+      const pageStr = this.rawPages[i] || "";
+      const linesInPage = pageStr.split("\n").length;
+
+      if (globalLineIndex < currentLineCount + linesInPage) {
+        targetPageIndex = i;
+        break;
+      }
+
+      currentLineCount += linesInPage + 1;
+    }
+
+    // Convert exact page index to spread index (floor to even number)
+    const requiredSpreadIndex = Math.floor(targetPageIndex / 2) * 2;
+
+    if (requiredSpreadIndex !== this.pageIndex) {
+      this.pageIndex = requiredSpreadIndex;
+      this.refreshTextareas();
+      this.updatePaginationButtons();
+    }
+  }
+
   updatePaginationButtons() {
     this.dom.prev.disabled = this.pageIndex <= 0;
     this.dom.next.disabled = false;
@@ -212,7 +257,9 @@ export class SongEditor {
     cleanPages.forEach((page, idx) => {
       if (idx > 0) sheetLines.push("~");
       const lines = page.split("\n");
-      sheetLines.push(...lines);
+      const scrubbedLines = lines.filter((line) => line.trim() !== "~");
+
+      sheetLines.push(...scrubbedLines);
     });
 
     // Get current bindings from main app
@@ -235,11 +282,34 @@ export class SongEditor {
   }
 
   async handleSave() {
-    if (!this.dom.inputs.title.value.trim()) {
+    const title = this.dom.inputs.title.value.trim();
+    const artist = this.dom.inputs.artist.value.trim();
+    const bpm = parseInt(this.dom.inputs.bpm.value, 10);
+
+    if (!title) {
       alert("Please enter a song title.");
       return;
     }
+    if (title.length > LIMITS.TITLE_MAX || artist.length > LIMITS.ARTIST_MAX) {
+      alert(`Title and Artist must be under ${LIMITS.TITLE_MAX} characters.`);
+      return;
+    }
+    if (bpm < LIMITS.BPM_MIN || bpm > LIMITS.BPM_MAX || isNaN(bpm)) {
+      alert(`BPM must be between ${LIMITS.BPM_MIN} and ${LIMITS.BPM_MAX}.`);
+      return;
+    }
+
     const data = this.getSongData();
+
+    // Validate total sheet length
+    const totalLength = data.sheet.join("\n").length;
+    if (totalLength > LIMITS.SHEET_MAX_CHARS) {
+      alert(
+        `Song length exceeds maximum limit of ${LIMITS.SHEET_MAX_CHARS} characters. Character count: ${totalLength}.`,
+      );
+      return;
+    }
+
     if (this.callbacks.onSave) {
       await this.callbacks.onSave(data);
     }
@@ -274,7 +344,7 @@ export class SongEditor {
     for (let i = 0; i < pageOffset; i++) {
       const page = this.rawPages[i] || "";
       const lines = page.split("\n");
-      linesBefore += lines.length;
+      linesBefore += lines.filter((l) => l.trim() !== "~").length;
       if (i > 0 || pageOffset > 0) linesBefore += 1;
     }
 

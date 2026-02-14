@@ -5,7 +5,7 @@ import { AutoPlayer } from "./core/AutoPlayer.js";
 import { StorageManager } from "./core/StorageManager.js";
 import { PianoKeyboard } from "./ui/PianoKeyboard.js";
 import { SheetDisplay } from "./ui/SheetDisplay.js";
-import { SongEditor } from "./ui/SongEditor.js";
+import { SongEditor, LIMITS } from "./ui/SongEditor.js";
 
 // --- Constants ---
 const CONSTANTS = {
@@ -48,7 +48,16 @@ const sheetUI = new SheetDisplay((lineIndex) => {
 // --- Initialize Player ---
 const player = new AutoPlayer(audio, logic, {
   onVisualEvent: (event) => {
-    if (event.lineIdx !== undefined) sheetUI.highlightLine(event.lineIdx);
+    // If running in editor mode, sync visual page
+    if (editorUI.isActive) {
+      if (event.lineIdx !== undefined) {
+        editorUI.syncPageWithLineIndex(event.lineIdx);
+      }
+    } else {
+      // Normal Read Mode
+      if (event.lineIdx !== undefined) sheetUI.highlightLine(event.lineIdx);
+    }
+
     if (event.midi) pianoUI.flashKey(event.midi);
   },
   onStop: () => {
@@ -381,11 +390,16 @@ async function refreshSongLibrary() {
     musicLibrary.forEach((song, index) => {
       const opt = document.createElement("option");
       opt.value = song.id; // Use ID instead of index
-      opt.innerText = song.title + (song.isCustom ? " *" : "");
+      const displayName = song.title + (song.isCustom ? " *" : "");
+      opt.innerText = displayName;
+      opt.title = displayName;
       sel.appendChild(opt);
     });
     // Restore if valid
-    if (musicLibrary.find((s) => s.id === oldVal)) sel.value = oldVal;
+    if (musicLibrary.find((s) => s.id === oldVal)) {
+      sel.value = oldVal;
+      sel.title = sel.options[sel.selectedIndex].text;
+    }
   });
 }
 
@@ -436,7 +450,15 @@ songSelects.forEach((sel) => {
 });
 
 function updateSongSelects(id) {
-  songSelects.forEach((s) => (s.value = id));
+  songSelects.forEach((s) => {
+    s.value = id;
+    const selectedOption = s.options[s.selectedIndex];
+    if (selectedOption) {
+      s.title = selectedOption.text;
+    } else {
+      s.title = "";
+    }
+  });
 }
 
 // Initialize First Song if available
@@ -646,6 +668,26 @@ fileInput.onchange = async (e) => {
 
     if (!songObj.title || !Array.isArray(songObj.sheet)) {
       alert("Invalid song file format.");
+      return;
+    }
+
+    const title = (songObj.title || "").toString();
+    const artist = (songObj.artist || "").toString();
+    const bpm = parseInt(songObj.bpm, 10);
+    const totalLength = songObj.sheet.join("\n").length;
+
+    if (title.length > LIMITS.TITLE_MAX || artist.length > LIMITS.ARTIST_MAX) {
+      alert("Import failed: Title or Artist exceeds 256 characters.");
+      return;
+    }
+    if (isNaN(bpm) || bpm < LIMITS.BPM_MIN || bpm > LIMITS.BPM_MAX) {
+      alert("Import failed: BPM must be between 1 and 50,000.");
+      return;
+    }
+    if (totalLength > LIMITS.SHEET_MAX_CHARS) {
+      alert(
+        `Import failed: Song sheet exceeds 150,000 characters. Character count: ${totalLength}.`,
+      );
       return;
     }
 
