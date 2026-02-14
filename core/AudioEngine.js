@@ -17,21 +17,21 @@ export class AudioEngine {
   getFileName(midi) {
     const names = [
       "c",
-      "c~",
+      "c#",
       "d",
-      "d~",
+      "d#",
       "e",
       "f",
-      "f~",
+      "f#",
       "g",
-      "g~",
+      "g#",
       "a",
-      "a~",
+      "a#",
       "b",
     ];
     const note = names[midi % 12];
     const octave = Math.floor(midi / 12) - 1;
-    return `./notes/${note}${octave}.mp3`;
+    return `./notes/${encodeURIComponent(note)}${octave}.mp3`;
   }
 
   async preload(midi) {
