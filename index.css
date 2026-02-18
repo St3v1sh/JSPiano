@@ -208,7 +208,7 @@ input[type="range"] {
 .right-controls {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -218,10 +218,20 @@ input[type="range"] {
   background: var(--border-subtle);
 }
 
+.song-selection {
+  display: flex;
+  gap: 10px;
+}
+
 .song-picker {
   width: 200px;
   font-weight: 600;
   text-overflow: ellipsis;
+}
+
+.checkbox-controls {
+  display: flex;
+  gap: 10px;
 }
 
 .toggle-container {
@@ -242,7 +252,6 @@ input[type="range"] {
 
 .playback-controls {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 

@@ -15,33 +15,35 @@
         <!-- Dashboard / Controls -->
         <div class="dashboard">
           <div class="left-controls">
-            <select id="songSelect" class="song-picker">
-              <option value="" disabled selected>Select Song...</option>
-            </select>
-            <button
-              id="btnCreateSong"
-              class="control-btn"
-              title="Create New Song"
-            >
-              <svg class="icon-svg" viewBox="0 0 24 24">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-              </svg>
-            </button>
-            <button
-              id="btnImportSong"
-              class="control-btn"
-              title="Import Song (JSON)"
-            >
-              <svg class="icon-svg" viewBox="0 0 24 24">
-                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-              </svg>
-            </button>
-            <input
-              type="file"
-              id="fileInput"
-              accept=".json"
-              style="display: none"
-            />
+            <div class="song-selection">
+              <select id="songSelect" class="song-picker">
+                <option value="" disabled selected>Select Song...</option>
+              </select>
+              <button
+                id="btnCreateSong"
+                class="control-btn"
+                title="Create New Song"
+              >
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+              </button>
+              <button
+                id="btnImportSong"
+                class="control-btn"
+                title="Import Song (JSON)"
+              >
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                </svg>
+              </button>
+              <input
+                type="file"
+                id="fileInput"
+                accept=".json"
+                style="display: none"
+              />
+            </div>
 
             <div class="separator"></div>
 
@@ -116,15 +118,17 @@
           </div>
 
           <div class="right-controls">
-            <label class="toggle-container"
-              ><input type="checkbox" id="toggleScroll" /> SCROLL</label
-            >
-            <label class="toggle-container"
-              ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
-            >
-            <label class="toggle-container"
-              ><input type="checkbox" id="toggleHints" checked /> HINTS</label
-            >
+            <div class="checkbox-controls">
+              <label class="toggle-container"
+                ><input type="checkbox" id="toggleScroll" /> SCROLL</label
+              >
+              <label class="toggle-container"
+                ><input type="checkbox" id="toggleNotes" checked /> NOTES</label
+              >
+              <label class="toggle-container"
+                ><input type="checkbox" id="toggleHints" checked /> HINTS</label
+              >
+            </div>
             <div class="separator"></div>
 
             <!-- Dashboard Bindings Trigger -->
