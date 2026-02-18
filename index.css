@@ -329,8 +329,10 @@ input[type="range"] {
 
 #sideVolumeValue,
 #sideTempoValue,
+#sideNoteLengthValue,
 #volumeValue,
-#tempoValue {
+#tempoValue,
+#noteLengthValue {
   font-size: 11px;
   font-family: monospace;
   color: var(--text-muted);
@@ -339,8 +341,10 @@ input[type="range"] {
 
 #sideVolumeValue:hover,
 #sideTempoValue:hover,
+#sideNoteLengthValue:hover,
 #volumeValue:hover,
-#tempoValue:hover {
+#tempoValue:hover,
+#noteLengthValue:hover {
   color: var(--text-main);
   text-decoration: underline;
 }
@@ -589,7 +593,7 @@ input[type="range"] {
 }
 
 /* Hover state for those buttons */
-.app-container.editor-mode .control-btn:hover:not(:disabled),
+.app-container.editor-mode .sheet-display .control-btn:hover:not(:disabled),
 .app-container.editor-mode .sheet-controls .control-btn:hover:not(:disabled) {
   background: var(--bg-editor-input-hover);
   border-color: var(--accent-primary);
@@ -809,7 +813,8 @@ input[type="range"] {
 }
 
 #sideVolumeSlider,
-#sideTempoSlider {
+#sideTempoSlider,
+#sideNoteLengthSlider {
   width: 100%;
 }
 

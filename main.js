@@ -21,6 +21,7 @@ const CONSTANTS = {
 // --- Initialize Core ---
 const audio = new AudioEngine();
 audio.setVolume(CONSTANTS.DEFAULT_VOL / 100);
+audio.setNoteDuration(2.0);
 
 const logic = new MusicLogic();
 const storage = new StorageManager();
@@ -157,6 +158,14 @@ const tempoLabels = [
   document.getElementById("tempoValue"),
   document.getElementById("sideTempoValue"),
 ];
+const noteLengthSliders = [
+  document.getElementById("noteLengthSlider"),
+  document.getElementById("sideNoteLengthSlider"),
+];
+const noteLengthLabels = [
+  document.getElementById("noteLengthValue"),
+  document.getElementById("sideNoteLengthValue"),
+];
 const scrollToggles = [
   document.getElementById("toggleScroll"),
   document.getElementById("sideToggleScroll"),
@@ -260,6 +269,24 @@ volumeLabels.forEach((label) => {
     volumeSliders.forEach((s) => (s.value = CONSTANTS.DEFAULT_VOL));
     volumeLabels.forEach((l) => (l.innerText = CONSTANTS.DEFAULT_VOL + "%"));
     audio.setVolume(CONSTANTS.DEFAULT_VOL / 100);
+  };
+});
+
+// --- Note Length Logic ---
+noteLengthSliders.forEach((slider) => {
+  slider.oninput = (e) => {
+    const val = e.target.value;
+    noteLengthSliders.forEach((s) => (s.value = val));
+    noteLengthLabels.forEach((l) => (l.innerText = val + "s"));
+    audio.setNoteDuration(val);
+  };
+});
+
+noteLengthLabels.forEach((label) => {
+  label.onclick = () => {
+    noteLengthSliders.forEach((s) => (s.value = 2.0));
+    noteLengthLabels.forEach((l) => (l.innerText = "2.0s"));
+    audio.setNoteDuration(2.0);
   };
 });
 

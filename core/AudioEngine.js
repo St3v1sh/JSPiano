@@ -3,6 +3,7 @@ export class AudioEngine {
     this.ctx = null;
     this.samples = new Map();
     this.masterVolume = 0.8;
+    this.noteDuration = 2.0;
   }
 
   init() {
@@ -12,6 +13,10 @@ export class AudioEngine {
 
   setVolume(val) {
     this.masterVolume = Math.max(0, Math.min(1, val));
+  }
+
+  setNoteDuration(val) {
+    this.noteDuration = Math.max(0.2, parseFloat(val));
   }
 
   getFileName(midi) {
@@ -68,19 +73,33 @@ export class AudioEngine {
     const gainNode = this.ctx.createGain();
     const vol = this.masterVolume;
 
+    // Calculate playback duration based on slider setting vs sample length
+    const duration = Math.min(buffer.duration, this.noteDuration);
+
     source.buffer = buffer;
 
     // ADSR Envelope
     gainNode.gain.setValueAtTime(0, playTime);
     gainNode.gain.linearRampToValueAtTime(1 * vol, playTime + 0.005);
-    // Simple release
-    gainNode.gain.setValueAtTime(1 * vol, playTime + buffer.duration - 0.1);
-    gainNode.gain.linearRampToValueAtTime(0, playTime + buffer.duration);
+
+    // Release / Cutoff logic
+    // Fade out over last 0.1s or from start if duration is tiny
+    const fadeOutTime = 0.1;
+    const fadeStart = Math.max(
+      playTime + 0.005,
+      playTime + duration - fadeOutTime,
+    );
+    const fadeEnd = playTime + duration;
+
+    // Anchor the gain at volume before fading
+    gainNode.gain.setValueAtTime(1 * vol, fadeStart);
+    gainNode.gain.linearRampToValueAtTime(0, fadeEnd);
 
     source.connect(gainNode);
     gainNode.connect(this.ctx.destination);
 
     source.start(playTime);
+    source.stop(fadeEnd + 0.1); // Cleanup slightly after fade out
   }
 
   getCurrentTime() {

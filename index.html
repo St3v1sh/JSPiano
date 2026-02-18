@@ -112,6 +112,26 @@
                       value="100"
                     />
                   </div>
+
+                  <div class="separator-horizontal"></div>
+
+                  <!-- Note Length Control -->
+                  <div class="setting-row">
+                    <div class="setting-label">
+                      Note Length
+                      <span id="noteLengthValue" title="Click to reset length"
+                        >2.0s</span
+                      >
+                    </div>
+                    <input
+                      type="range"
+                      id="noteLengthSlider"
+                      min="0.2"
+                      max="2.0"
+                      step="0.1"
+                      value="2.0"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -225,6 +245,8 @@
               </button>
             </div>
           </div>
+
+          <!-- Volume Control -->
           <div class="side-group">
             <div class="side-label">
               Volume <span id="sideVolumeValue">80%</span>
@@ -237,6 +259,8 @@
               value="80"
             />
           </div>
+
+          <!-- Tempo Control -->
           <div class="side-group">
             <div class="side-label">
               Tempo
@@ -248,6 +272,24 @@
               min="10"
               max="200"
               value="100"
+            />
+          </div>
+
+          <!-- Note Length Control -->
+          <div class="side-group">
+            <div class="side-label">
+              Note Length
+              <span id="sideNoteLengthValue" title="Click to reset length"
+                >2.0s</span
+              >
+            </div>
+            <input
+              type="range"
+              id="sideNoteLengthSlider"
+              min="0.2"
+              max="2.0"
+              step="0.1"
+              value="2.0"
             />
           </div>
           <div class="side-group">
@@ -461,7 +503,7 @@
       </div>
     </div>
 
-    <!-- Special Bindings Modal (omitted for brevity, assume same structure) -->
+    <!-- Special Bindings Modal -->
     <div id="bindingsModal" class="modal-overlay">
       <div class="modal-window">
         <div class="modal-header">
