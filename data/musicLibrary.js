@@ -6,6 +6,7 @@
  *   artist: string (optional)
  *   bpm: number (characters per minute / engine speed)
  *   scale: string (Must match a key in MusicLogic.scales)
+ *   noteLength: number (optional, defaults to 2.0s, range 0.2 - 2.0)
  *   sheet: string[] (The actual lines of music)
  * }
  */
@@ -21,6 +22,7 @@ export const musicLibrary = [
       "[": { norm: "%" },
       "]": { norm: "W" },
     },
+    noteLength: 2.0,
     sheet: `
       -0 ---
       60 er tr e0
@@ -67,6 +69,7 @@ export const musicLibrary = [
     bpm: 384,
     scale: "G Major",
     bindings: {},
+    noteLength: 1.0,
     sheet: `
       -1 ---
       [wd]. [rs]. [ya]. [rp]. [0h]. [rf]. [qg]. [rf].
@@ -190,6 +193,7 @@ export const musicLibrary = [
     bpm: 500,
     scale: "G Major",
     bindings: {},
+    noteLength: 1.5,
     sheet: `
       -0 ---
       [0f]... [wr].a. .... [wr].p.
@@ -293,7 +297,7 @@ export const musicLibrary = [
       u.o. [ah].[sk]. a.o. [ugj].[ox].
       r.[yk]. [ig].[oj]. i.[yh]. [dg].[rf].
       u.o. a.s. .a.. o.i.
-      .... .u.. .... ....
+      .... .[0u].. .... ....
       `
       .trim()
       .split("\n")
@@ -306,6 +310,7 @@ export const musicLibrary = [
     bpm: 456,
     scale: "F Major",
     bindings: {},
+    noteLength: 1.5,
     sheet: `
       -1
       [7adg]. r... [8sfh]... t. s. t.

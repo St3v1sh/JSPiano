@@ -12,6 +12,8 @@ export const LIMITS = {
   ARTIST_MAX: 256,
   BPM_MIN: 1,
   BPM_MAX: 50000,
+  NOTE_LEN_MIN: 0.2,
+  NOTE_LEN_MAX: 2.0,
   SHEET_MAX_CHARS: 150000,
 };
 
@@ -27,6 +29,7 @@ export class SongEditor {
         artist: document.getElementById("editArtist"),
         bpm: document.getElementById("editBpm"),
         scale: document.getElementById("editScale"),
+        noteLength: document.getElementById("editNoteLength"),
       },
       textareas: {
         left: document.getElementById("txtPageLeft"),
@@ -126,6 +129,9 @@ export class SongEditor {
     this.dom.inputs.scale.value = songData
       ? songData.scale
       : this.logic.currentScale;
+    this.dom.inputs.noteLength.value = songData
+      ? songData.noteLength || LIMITS.NOTE_LEN_MAX
+      : LIMITS.NOTE_LEN_MAX;
 
     // Ensure logic engine matches editor scale immediately
     // If not, trigger the callback to sync global state
@@ -275,6 +281,7 @@ export class SongEditor {
       artist: this.dom.inputs.artist.value || EDITOR_DEFAULTS.UNKNOWN_ARTIST,
       bpm: parseInt(this.dom.inputs.bpm.value, 10) || EDITOR_DEFAULTS.BPM,
       scale: this.dom.inputs.scale.value,
+      noteLength: parseFloat(this.dom.inputs.noteLength.value),
       bindings: bindings,
       sheet: sheetLines,
       isCustom: true,
@@ -285,6 +292,7 @@ export class SongEditor {
     const title = this.dom.inputs.title.value.trim();
     const artist = this.dom.inputs.artist.value.trim();
     const bpm = parseInt(this.dom.inputs.bpm.value, 10);
+    const noteLength = parseFloat(this.dom.inputs.noteLength.value);
 
     if (!title) {
       alert("Please enter a song title.");
@@ -296,6 +304,16 @@ export class SongEditor {
     }
     if (bpm < LIMITS.BPM_MIN || bpm > LIMITS.BPM_MAX || isNaN(bpm)) {
       alert(`BPM must be between ${LIMITS.BPM_MIN} and ${LIMITS.BPM_MAX}.`);
+      return;
+    }
+    if (
+      isNaN(noteLength) ||
+      noteLength < LIMITS.NOTE_LEN_MIN ||
+      noteLength > LIMITS.NOTE_LEN_MAX
+    ) {
+      alert(
+        `Note Length must be between ${LIMITS.NOTE_LEN_MIN}s and ${LIMITS.NOTE_LEN_MAX}s.`,
+      );
       return;
     }
 

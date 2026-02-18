@@ -90,6 +90,13 @@ const editorUI = new SongEditor(logic, {
     await refreshSongLibrary();
     // Select the saved song
     updateSongSelects(songData.id);
+
+    // Sync audio engine and sliders with saved data immediately
+    const nLen = songData.noteLength || 2.0;
+    audio.setNoteDuration(nLen);
+    noteLengthSliders.forEach((s) => (s.value = nLen));
+    noteLengthLabels.forEach((l) => (l.innerText = nLen + "s"));
+
     player.load(songData);
     sheetUI.load(songData);
     syncBindingUI(songData.bindings);
@@ -460,6 +467,12 @@ const handleSongSelection = (id) => {
     logic.setScale(song.scale);
     pianoUI.updateLabels();
   }
+
+  // Load Note Length (Sync with sliders)
+  const nLen = song.noteLength || 2.0;
+  audio.setNoteDuration(nLen);
+  noteLengthSliders.forEach((s) => (s.value = nLen));
+  noteLengthLabels.forEach((l) => (l.innerText = nLen + "s"));
 
   // Handle Edit Button Visibility
   btnEditSong.style.display = song.isCustom ? "inline-flex" : "none";
