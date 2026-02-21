@@ -196,10 +196,12 @@ export class AutoPlayer {
     if (isGrace) {
       const stepTime = durationSec / (notes.length || 1);
       notes.forEach((char, idx) => {
+        if (char === ".") return;
         this.fireSound(char, startTime + idx * stepTime);
       });
     } else {
       notes.forEach((char) => {
+        if (char === ".") return;
         this.fireSound(char, startTime);
       });
     }
