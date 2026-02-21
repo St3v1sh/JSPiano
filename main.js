@@ -657,12 +657,15 @@ function enterEditorMode(songData) {
     syncBindingUI({});
   }
 
-  editorUI.load(songData || null);
+  const startPage = songData ? sheetUI.pageIndex : 0;
+  editorUI.load(songData || null, startPage);
 }
 
 function exitEditorMode() {
   player.stop();
   updatePlayButtons(false);
+
+  const lastPageIndex = editorUI.pageIndex;
 
   editorUI.isActive = false;
   appContainer.classList.remove("editor-mode");
@@ -686,6 +689,18 @@ function exitEditorMode() {
   } else {
     updateSongSelects(previousSongId);
     handleSongSelection(previousSongId);
+  }
+
+  // Restore the page index if valid
+  if (typeof lastPageIndex === "number") {
+    let targetIndex = Math.min(
+      lastPageIndex,
+      sheetUI.sheetPagesHTML.length - 1,
+    );
+
+    targetIndex -= targetIndex % 2;
+    sheetUI.pageIndex = targetIndex;
+    sheetUI.render();
   }
 }
 

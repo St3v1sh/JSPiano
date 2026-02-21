@@ -75,7 +75,7 @@ export class SheetDisplay {
 
   render() {
     if (this.sheetPagesHTML.length === 0) {
-      this.dom.left.innerHTML = "No sheet selected.";
+      this.dom.left.innerHTML = "";
       this.dom.right.innerHTML = "";
       this.dom.indicator.innerText = "--";
       this.dom.prev.disabled = true;

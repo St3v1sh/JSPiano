@@ -118,7 +118,7 @@ export class SongEditor {
     });
   }
 
-  load(songData) {
+  load(songData, initialPageIndex = 0) {
     // Reset State
     this.currentSongId = songData ? songData.id : null;
     this.dom.inputs.title.value = songData ? songData.title : "";
@@ -134,7 +134,6 @@ export class SongEditor {
       : LIMITS.NOTE_LEN_MAX;
 
     // Ensure logic engine matches editor scale immediately
-    // If not, trigger the callback to sync global state
     if (this.logic.currentScale !== this.dom.inputs.scale.value) {
       if (this.callbacks.onScaleChange)
         this.callbacks.onScaleChange(this.dom.inputs.scale.value);
@@ -143,17 +142,22 @@ export class SongEditor {
     this.dom.buttons.delete.style.display = songData ? "inline-flex" : "none";
     this.dom.toggleNotation.checked = false;
     this.isNotationMode = false;
+    this.rawPages = [];
+    let currentPageLines = [];
 
-    // Parse Sheet into Pages
     if (songData && songData.sheet) {
-      const fullText = songData.sheet.join("\n");
-      this.rawPages = fullText.split(/^\s*~\s*$/m).map((p) => p.trim());
-      if (this.rawPages.length === 0) this.rawPages = [""];
-    } else {
-      this.rawPages = [""];
+      songData.sheet.forEach((line) => {
+        if (line.trim() === "~") {
+          this.rawPages.push(currentPageLines.join("\n"));
+          currentPageLines = [];
+        } else {
+          currentPageLines.push(line);
+        }
+      });
     }
 
-    this.pageIndex = 0;
+    this.rawPages.push(currentPageLines.join("\n"));
+    this.pageIndex = initialPageIndex;
     this.refreshTextareas();
     this.updatePaginationButtons();
   }
@@ -254,7 +258,9 @@ export class SongEditor {
     this.saveCurrentPagesToMemory();
 
     // Reconstruct sheet array
-    let cleanPages = [...this.rawPages];
+    let cleanPages = [...this.rawPages].filter(
+      (page) => page.trim().length > 0,
+    );
     while (cleanPages.length > 0 && !cleanPages[cleanPages.length - 1].trim()) {
       cleanPages.pop();
     }

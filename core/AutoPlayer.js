@@ -130,11 +130,10 @@ export class AutoPlayer {
       return;
     }
 
-    const line = this.rawLines[this.currentLineIdx];
-    const trimmed = line.trim();
+    const line = this.rawLines[this.currentLineIdx].trim();
 
     // Skip empty lines or comments
-    if (!trimmed || trimmed === "~" || trimmed.startsWith("-")) {
+    if (!line || line === "~" || line.startsWith("-")) {
       this.queueVisual({
         time: this.nextNoteTime,
         lineIdx: this.currentLineIdx,
