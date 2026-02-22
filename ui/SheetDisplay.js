@@ -11,7 +11,7 @@ export class SheetDisplay {
     };
 
     this.seekCallback = seekCallback;
-    this.autoScrollEnabled = false;
+    this.autoScrollEnabled = true;
 
     // State
     this.sheetPagesHTML = [];
