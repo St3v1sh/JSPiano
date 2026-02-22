@@ -185,6 +185,7 @@ const hintToggles = [
   document.getElementById("toggleHints"),
   document.getElementById("sideToggleHints"),
 ];
+const togglePinSide = document.getElementById("togglePinSide");
 const btnSettings = document.getElementById("btnSettings");
 const settingsDropdown = document.getElementById("settingsDropdown");
 const sidePanel = document.getElementById("sidePanel");
@@ -771,7 +772,7 @@ fileInput.onchange = async (e) => {
 
 // --- Scroll Visibility Logic ---
 const updateSidePanelVisibility = () => {
-  const isDashboardHidden = window.scrollY >= 1;
+  const isDashboardHidden = window.scrollY >= 1 || togglePinSide.checked;
   const isWideEnough = window.innerWidth >= 1510;
 
   if (isDashboardHidden && isWideEnough) {
@@ -781,6 +782,7 @@ const updateSidePanelVisibility = () => {
   }
 };
 
+togglePinSide.addEventListener("change", updateSidePanelVisibility);
 window.addEventListener("scroll", updateSidePanelVisibility);
 window.addEventListener("resize", updateSidePanelVisibility);
 

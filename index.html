@@ -140,17 +140,21 @@
           <div class="right-controls">
             <div class="checkbox-controls">
               <label class="toggle-container"
+                ><input type="checkbox" id="togglePinSide" checked />Pin
+                Side</label
+              >
+              <label class="toggle-container"
                 ><input
                   type="checkbox"
                   id="toggleScroll"
                   checked
-                />SCROLL</label
+                />Scroll</label
               >
               <label class="toggle-container"
-                ><input type="checkbox" id="toggleNotes" checked />NOTES</label
+                ><input type="checkbox" id="toggleNotes" checked />Notes</label
               >
               <label class="toggle-container"
-                ><input type="checkbox" id="toggleHints" checked />HINTS</label
+                ><input type="checkbox" id="toggleHints" checked />Hints</label
               >
             </div>
             <div class="separator"></div>
@@ -227,7 +231,7 @@
     <div class="app-container" id="appContainer">
       <div class="side-panel-track">
         <!-- Floating Side Panel -->
-        <div id="sidePanel" class="side-panel">
+        <div id="sidePanel" class="side-panel visible">
           <div class="side-group">
             <div class="side-label">Song</div>
             <select id="sideSongSelect" class="side-select">
