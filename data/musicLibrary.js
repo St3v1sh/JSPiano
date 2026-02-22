@@ -12,6 +12,7 @@
  */
 
 import { fieldOfHopesAndDreams } from "./fieldOfHopesAndDreams.js";
+import { home } from "./home.js";
 import { livingMice } from "./livingMice.js";
 import { marbleMachine } from "./marbleMachine.js";
 import { neverGonnaGiveYouUp } from "./neverGonnaGiveYouUp.js";
@@ -24,6 +25,7 @@ export const musicLibrary = [
   livingMice,
   marbleMachine,
   neverGonnaGiveYouUp,
+  home,
   fieldOfHopesAndDreams,
   {
     id: "test",
